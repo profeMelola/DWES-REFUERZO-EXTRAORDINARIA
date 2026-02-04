@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Compras')}"></head>
+
+<body class="bg-light">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <div class="text-muted small">
+                <a th:href="@{/purchases}" class="text-decoration-none">Mis compras</a>
+                <span class="mx-1">/</span>
+                <span>Detalle</span>
+            </div>
+            <h2 class="mb-0">
+                Compra <span th:text="${purchase.id}">1</span>
+            </h2>
+        </div>
+
+        <a th:href="@{/purchases}" class="btn btn-outline-secondary btn-sm">
+            Volver
+        </a>
+    </div>
+
+    <!-- Purchase summary -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+
+                <div class="col-12 col-md-8">
+                    <div class="d-flex flex-wrap gap-2">
+<!--                        <span class="badge text-bg-dark">-->
+<!--                            <span class="me-1">ID:</span>-->
+<!--                            <span th:text="${purchase.id}">1</span>-->
+<!--                        </span>-->
+
+                        <span class="badge text-bg-info">
+                            <span class="me-1">Fecha:</span>
+                            <span th:text="${#temporals.format(purchase.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+
+                        </span>
+
+                        <span class="badge text-bg-success">
+                            <span class="me-1">Total:</span>
+                            <span th:text="${purchase.totalAmount}">0.00</span><span>€</span>
+                        </span>
+                    </div>
+
+<!--                    <div class="text-muted small mt-2">-->
+<!--                        Consulta el detalle de líneas debajo.-->
+<!--                    </div>-->
+                </div>
+
+<!--                <div class="col-12 col-md-4">-->
+<!--                    <div class="border rounded p-3 bg-white">-->
+<!--                        <div class="fw-semibold mb-2">Resumen</div>-->
+
+<!--                        <div class="d-flex justify-content-between">-->
+<!--                            <span class="text-muted">Tipo de entradas</span>-->
+<!--                            <span class="fw-semibold"-->
+<!--                                  th:text="${purchase.lines != null ? #lists.size(purchase.lines) : 0}">-->
+<!--                                0-->
+<!--                            </span>-->
+<!--                        </div>-->
+
+<!--                        <div class="d-flex justify-content-between mt-1">-->
+<!--                            <span class="text-muted">Importe</span>-->
+<!--                            <span class="fw-semibold">-->
+<!--                                <span th:text="${purchase.totalAmount}">0.00</span><span class="text-muted">€</span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-2">
+        <h4 class="mb-0">Entradas (líneas de compra)</h4>
+        <span class="text-muted small"
+              th:text="${purchase.lines != null ? (#lists.size(purchase.lines) + ' línea(s)') : '0 línea(s)'}">
+            0 línea(s)
+        </span>
+    </div>
+
+    <div th:if="${purchase.lines == null or #lists.isEmpty(purchase.lines)}"
+         class="alert alert-warning shadow-sm">
+        Esta compra no tiene líneas.
+    </div>
+
+    <div th:if="${purchase.lines != null and !#lists.isEmpty(purchase.lines)}"
+         class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Tipo</th>
+                        <th class="text-end">Precio</th>
+                        <th class="text-end">Cantidad</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="l : ${purchase.lines}">
+                        <td>
+                            <div class="fw-semibold" th:text="${l.ticketTypeCode}">TT</div>
+                        </td>
+
+                        <td>
+                            <span class="badge text-bg-secondary" th:text="${l.ticketNameSnapshot}">
+                                GENERAL
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            <span th:text="${l.unitPriceSnapshot}">0.00</span>
+                            <span class="text-muted">€</span>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="badge text-bg-light border" th:text="${l.qty}">1</span>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="fw-semibold" th:text="${l.lineTotal}">0.00</span>
+                            <span class="text-muted">€</span>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                    <tfoot class="table-light">
+                    <tr>
+                        <th colspan="4" class="text-end">Total</th>
+                        <th class="text-end">
+                            <span class="fw-semibold" th:text="${purchase.totalAmount}">0.00</span>
+                            <span class="text-muted">€</span>
+                        </th>
+                    </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

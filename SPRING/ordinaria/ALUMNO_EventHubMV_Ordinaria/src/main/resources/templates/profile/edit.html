@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Editar perfil')}"></head>
+
+<body class="bg-light">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <h2 class="mb-3">Editar perfil</h2>
+
+          <div th:if="${success}" class="alert alert-success" role="alert"
+               th:text="${success}">
+          </div>
+
+          <div th:if="${error}" class="alert alert-danger" role="alert"
+               th:text="${error}">
+            Ha ocurrido un error.
+          </div>
+
+          <form method="post" novalidate>
+
+            <!-- Full name -->
+            <div class="mb-3">
+              <label for="fullName" class="form-label">Nombre completo</label>
+              <input id="fullName"
+                     type="text"
+                     class="form-control"
+                     placeholder="Tu nombre completo">
+              <div class="text-danger small">
+                Error fullName
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input id="email"
+                     type="email"
+                     class="form-control"
+                     placeholder="nombre@dominio.com">
+              <div class="text-danger small">
+                Error email
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h5 class="mb-3">Cambiar contraseña (opcional)</h5>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Nueva contraseña</label>
+              <input id="password"
+                     type="password"
+                     class="form-control"
+                     placeholder="Deja en blanco para no cambiarla">
+              <div class="form-text">
+                Si rellenas este campo, deberás confirmar la contraseña.
+              </div>
+              <div class="text-danger small">
+                Error password
+              </div>
+            </div>
+
+            <!-- Confirm password -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+              <input id="confirmPassword"
+                     type="password"
+                     class="form-control"
+                     placeholder="Repite la nueva contraseña">
+              <div class="text-danger small">
+                Error confirmPassword
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                Guardar cambios
+              </button>
+
+              <a th:href="@{/events}" class="btn btn-outline-secondary">
+                Cancelar
+              </a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

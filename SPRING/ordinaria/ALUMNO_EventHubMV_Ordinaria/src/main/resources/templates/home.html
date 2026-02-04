@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Home')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+    <h2>EventHub MVC</h2>
+    <p class="muted">Prueba evaluable SPRING II</p>
+
+    <div class="row">
+        <div class="card" style="flex:1;">
+            <h3>Catálogo</h3>
+            <p class="muted">Explorar eventos y ver sus tickets.</p>
+            <a th:href="@{/events}">Ir a eventos</a>
+        </div>
+
+        <div class="card" style="flex:1;">
+            <h3>Carrito</h3>
+            <p class="muted">Gestiona tickets en la sesión.</p>
+            <a th:href="@{/cart}">Ver carrito</a>
+        </div>
+
+        <div class="card" style="flex:1;">
+            <h3>Compras</h3>
+            <p class="muted">Listado de compras realizadas</p>
+            <a th:href="@{/purchases}">Mis compras</a>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>
+

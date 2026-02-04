@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Mis compras')}"></head>
+
+<body class="bg-light">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="mb-0">Mis compras</h2>
+        <a th:href="@{/events}" class="btn btn-outline-secondary btn-sm">Ir a eventos</a>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${#lists.isEmpty(purchases)}" class="card shadow-sm">
+        <div class="card-body">
+            <div class="alert alert-info mb-0">
+                No hay compras todavía.
+                <a th:href="@{/events}" class="alert-link">Explorar eventos</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchases table -->
+    <div th:if="${!#lists.isEmpty(purchases)}" class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Historial</span>
+            <span class="text-muted small" th:text="${#lists.size(purchases) + ' compra(s)'}">0 compra(s)</span>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+<!--                        <th style="width: 90px;">ID</th>-->
+                        <th>Fecha</th>
+                        <th class="text-end">Total</th>
+                        <th style="width: 120px;"></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="p : ${purchases}">
+<!--                        <td class="fw-semibold" th:text="${p.id}">1</td>-->
+
+                        <td>
+                            <span th:text="${#temporals.format(p.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="fw-semibold" th:text="${p.totalAmount}">0.00</span>
+                            <span class="text-muted">€</span>
+                        </td>
+
+                        <td class="text-end">
+                            <a class="btn btn-outline-primary btn-sm"
+                               th:href="@{/purchases/{id}(id=${p.id})}">
+                                Ver
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

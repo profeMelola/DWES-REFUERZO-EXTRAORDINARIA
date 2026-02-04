@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Detalle evento')}"></head>
+
+<body class="bg-light">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- Header / breadcrumb -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <div class="text-muted small">
+                <a th:href="@{/events}" class="text-decoration-none">Eventos</a>
+                <span class="mx-1">/</span>
+                <span th:text="${event.code}">EVT_CODE</span>
+            </div>
+            <h2 class="mb-0" th:text="${event.title}">Event title</h2>
+        </div>
+
+        <a th:href="@{/events}" class="btn btn-outline-secondary btn-sm">
+            Volver al listado
+        </a>
+    </div>
+
+    <!-- Event card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-lg-8">
+                    <p class="mb-2 text-muted" th:text="${event.description}">
+                        Descripción del evento...
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge text-bg-dark">
+                            <span class="me-1">Code:</span>
+                            <span th:text="${event.code}">EVT_CODE</span>
+                        </span>
+
+                        <span class="badge text-bg-secondary" th:text="${event.category}">
+                            CATEGORY
+                        </span>
+
+                        <span class="badge text-bg-info">
+                            <span class="me-1">Inicio:</span>
+                            <span th:text="${event.startDateTimeFormatted()}"></span>
+
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-2">
+        <h4 class="mb-0">Tipo de entradas (Ticket types)</h4>
+        <span class="text-muted small" th:text="${#lists.size(ticketTypes) + ' tipos disponibles'}">
+            0 tipos disponibles
+        </span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(ticketTypes)}" class="alert alert-warning shadow-sm">
+        No hay tipos de ticket disponibles para este evento.
+    </div>
+
+    <div th:if="${!#lists.isEmpty(ticketTypes)}" class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Tipo</th>
+                        <th class="text-end">Precio</th>
+                        <th class="text-end">Cantidad disponible</th>
+                        <th style="width: 260px;">Cantidad a comprar</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="t : ${ticketTypes}">
+                        <td>
+                            <div class="fw-semibold" th:text="${t.category.name}">GENERAL</div>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="fw-semibold" th:text="${t.basePrice}">0.00</span>
+                            <span class="text-muted">€</span>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="badge text-bg-light border" th:text="${t.quota}">0</span>
+                        </td>
+
+                        <td>
+                            <form th:action="@{/cart/add}"
+                                  th:object="${addToCart}"
+                                  method="post"
+                                  class="row g-2 align-items-center"
+                                  th:if="${#authorization.expression('isAuthenticated()')}">
+
+                                <input type="hidden" name="eventCode" th:value="${event.code}"/>
+                                <input type="hidden" name="ticketTypeCode" th:value="${t.code}"/>
+
+
+                                <div class="col">
+                                    <input type="number"
+                                           th:field="*{qty}"
+                                           min="1"
+                                           th:attr="max=${t.category.maxPerPurchase}"
+                                           class="form-control form-control-sm"
+                                           aria-label="Cantidad"/>
+
+
+                                    <!-- Pintar error SOLO en la fila del ticket enviado -->
+                                    <div class="text-danger small"
+                                         th:if="${#fields.hasErrors('qty')} and *{ticketTypeCode} == ${t.code}"
+                                         th:errors="*{qty}">
+                                    </div>
+
+                                    <div class="text-danger small"
+                                         th:if="${#fields.hasErrors('ticketTypeCode')} and *{ticketTypeCode} == ${t.code}"
+                                         th:errors="*{ticketTypeCode}">
+                                    </div>
+                                </div>
+
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        Añadir
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Usuario NO autenticado -->
+                            <span th:if="${!#authorization.expression('isAuthenticated()')}"
+                                  class="text-muted fst-italic">
+                                Para comprar, autentícate
+                            </span>
+
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <a th:href="@{/cart}" class="btn btn-outline-primary btn-sm" th:if="${#authorization.expression('isAuthenticated()')}">
+                Ver carrito
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

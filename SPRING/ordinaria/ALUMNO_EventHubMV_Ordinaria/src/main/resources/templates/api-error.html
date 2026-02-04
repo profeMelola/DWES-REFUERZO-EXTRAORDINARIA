@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Error')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="alert alert-danger text-center" role="alert">
+  <h4 class="alert-heading">API Connection Error</h4>
+  <p th:text="${errorMessage}">Could not connect to API</p>
+</div>
+<a th:href="@{/home}" class="btn btn-outline-primary">Home</a>
+</body>
+</html>
