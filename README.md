@@ -1,4 +1,4 @@
-# Refuerzo extraordinaria 202-26
+# Refuerzo extraordinaria 2025-26
 
 <img width="587" height="179" alt="image" src="https://github.com/user-attachments/assets/34f7103f-3f2d-4860-a45d-8900a9e437e5" />
 
