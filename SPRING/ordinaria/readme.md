@@ -59,7 +59,7 @@ Parte de *InvoiceController* y ve completando los fuentes pertienentes. Completa
 
 La factura debe persistirse junto con todas sus líneas en la base de datos en la misma operación. Mantener bidireccionalidad.
 
-**Seguridad:**El usuario solo con rol ADMIN o BILLING. 
+**Seguridad:** El usuario solo con rol ADMIN o BILLING. 
 
 
 1. No puede haber servicios duplicados en el json request; si no → BadRequestException (400)
