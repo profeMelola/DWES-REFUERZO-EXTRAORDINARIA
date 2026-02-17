@@ -2,7 +2,7 @@
 
 Todos los endpoints son públicos. Si tenéis problemas para configurar la SEGURIDAD, dejadlos públicos.
 
-USUARIOS DE PRUEBA (login y pwd iguales): admin, staff, billing
+**USUARIOS DE PRUEBA** (login y pwd iguales): admin, staff, billing
 
 ## Modelo completo del dominio
 
