@@ -1,4 +1,4 @@
-# Prueba objetiva individual evaluable de Spring 
+# Prueba individual evaluable de Spring 
 
 Todos los endpoints son públicos. Si tenéis problemas para configurar la SEGURIDAD, dejadlos públicos.
 
