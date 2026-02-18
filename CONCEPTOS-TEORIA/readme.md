@@ -64,6 +64,7 @@ Spring Boot 4.0.x está construido sobre:
 | Spring Framework | 7.0.x   |
 | Java             | 21      |
 
+
 ## Spring Framework
 
 Es el framework base. Proporciona:
@@ -101,14 +102,16 @@ Tomcat resuelve la capa web:
   - Dispatching de requests
 
   Spring Boot desacopla todo:
+  
 
-  | Componente      | Quién lo implementa |
+| Componente      | Quién lo implementa |
 | --------------- | ------------------- |
 | HTTP            | Tomcat              |
 | JPA             | Hibernate           |
 | Transacciones   | Spring              |
 | Seguridad       | Spring Security     |
 | Pool conexiones | HikariCP            |
+
 
 Spring no necesita un servidor completo porque:
 
