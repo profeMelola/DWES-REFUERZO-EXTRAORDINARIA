@@ -47,3 +47,98 @@ Si eliges Gradle-Groovy en un proyecto Java el build script es build.gradle.
 Alternativa: Gradle-Kotlin (scripts en Kotlin).
 
 Maven es más “estándar académico” y Gradle es más flexible y rápido en builds grandes.
+
+---
+
+# Nuevos proyectos Spring Boot
+
+Spring Boot 4.0.x está construido sobre:
+
+- Spring Framework 7.0.x
+- Basado en Jakarta EE 11
+- Requiere Java 21
+
+| Capa             | Versión |
+| ---------------- | ------- |
+| Spring Boot      | 4.0.1   |
+| Spring Framework | 7.0.x   |
+| Java             | 21      |
+
+## Spring Framework
+
+Es el framework base. Proporciona:
+
+- IoC / Dependency Injection (ApplicationContext)
+- Spring MVC
+- Spring Data (integración)
+- Transacciones
+- Seguridad (módulo aparte)
+- Integración con JPA, JMS, etc.
+
+## Spring Boot
+
+Es una capa encima de Spring Framework que añade:
+
+- Auto-configuración
+- Servidor embebido (Tomcat/Jetty)
+- Starters (dependencias agrupadas)
+- Convenciones por defecto
+- Ejecutable java -jar
+- Configuración simplificada
+
+---
+
+# Tomcat integrado en Spring
+
+Tomcat resuelve la capa web:
+
+- Un Servlet Container
+- Implementa la especificación Jakarta Servlet
+- Gestiona:
+  - Conexiones HTTP
+  - Ciclo de vida de servlets
+  - Filtros
+  - Dispatching de requests
+
+  Spring Boot desacopla todo:
+
+  | Componente      | Quién lo implementa |
+| --------------- | ------------------- |
+| HTTP            | Tomcat              |
+| JPA             | Hibernate           |
+| Transacciones   | Spring              |
+| Seguridad       | Spring Security     |
+| Pool conexiones | HikariCP            |
+
+Spring no necesita un servidor completo porque:
+
+- No depende de un contenedor Java EE.
+- Implementa la mayoría de la infraestructura él mismo.
+- Solo delega en Tomcat la parte HTTP.
+
+# JakartaEE y servidor de aplicaciones. Modelo clásico "Application Server!
+
+Arquitectura centrada en el servidor. Servidor de aplicaciones (WildFly) proporciona:
+
+- Implementación de especificaciones Jakarta EE:
+  - Servlet
+  - JAX-RS (REST → Jersey / RESTEasy)
+  - JPA (Hibernate integrado)
+  - CDI (inyección de dependencias)
+  - JTA (transacciones)
+  - Seguridad
+
+- Gestión centralizada de recursos
+- Despliegue como WAR / EAR
+
+
+- Se programa contra especificaciones estándar
+- El contenedor implementa la infraestructura
+- El servidor es el núcleo del sistema
+
+| Jakarta EE                                | Spring Boot                                |
+| ----------------------------------------- | ------------------------------------------ |
+| El servidor implementa la infraestructura | La aplicación incorpora la infraestructura |
+| WAR desplegado en contenedor              | JAR ejecutable                             |
+| Modelo centralizado                       | Modelo autónomo y desacoplado              |
+
