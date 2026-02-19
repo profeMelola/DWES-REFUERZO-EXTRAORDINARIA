@@ -80,3 +80,40 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 ### Response
 
 ![alt text](image-2.png)
+
+## 3. INFORME DE SERVICIOS MÁS FACTURADOS
+
+```
+GET /api/reports/top-services
+```
+
+Endpoint de reporting que devuelve un ranking PAGINADO de los servicios médicos más facturados en un intervalo de tiempo, filtrando por la fecha de emisión de la factura.
+
+COMPLETA LAS CLASES QUE SE PROPORCIONAN:
+
+- ReportController
+- ReportService
+- TopServiceReport(mantén campos acorde captura)
+- InvoiceLineRepository
+- 
+La solución debe usar JPQL con proyección a DTO. (joins + group by + agregaciones)
+
+El filtro se hace por factura, no por cita (Invoice.issuedAt)
+
+- from (obligatorio) → fecha/hora mínima (incluida).
+- to (obligatorio) → fecha/hora máxima (incluida).
+- status (opcional) → si se informa, solo se consideran facturas con ese estado.
+- Solo acceso usuario con rol BILLING.
+- El ranking se calcula solo con facturas emitidas (issuedAt != null) en el rango de fechas.
+- Los servicios más facturados deben aparecer primero (importe total facturado).
+
+  
+Como resultado debe devolverse una lista del DTO TopServiceReport, con estos campos:
+- serviceId: id del servicio
+- serviceName: nombre del servicio
+- linesCount: número de líneas de factura asociadas al servicio
+- unitsSold:unidades totales vendidas del servicio
+- totalBilled: importe total facturado del servicio
+  
+El número máximo de resultados lo marca el tamaño de la paginación:por defecto 3, mínimo 1, máximo 5
+
