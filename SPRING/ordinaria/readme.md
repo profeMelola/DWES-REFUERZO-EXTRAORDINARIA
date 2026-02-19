@@ -95,7 +95,7 @@ COMPLETA LAS CLASES QUE SE PROPORCIONAN:
 - ReportService
 - TopServiceReport(mantén campos acorde captura)
 - InvoiceLineRepository
-- 
+  
 La solución debe usar JPQL con proyección a DTO. (joins + group by + agregaciones)
 
 El filtro se hace por factura, no por cita (Invoice.issuedAt)
@@ -117,3 +117,26 @@ Como resultado debe devolverse una lista del DTO TopServiceReport, con estos cam
   
 El número máximo de resultados lo marca el tamaño de la paginación:por defecto 3, mínimo 1, máximo 5
 
+
+### Pasos para su resolución
+
+1. ¿Qué filas quiero devolver? Un ranking de servicios. Una fila =  1 servicio
+2. ¿Qué entidad representa "una venta de un servicio"?
+3. Elige el FROM correcto. Los agregados salen de la entidad elegida en el from.
+4. Filtros. Pon el where correctamente.
+5. ¿Qué significa "más facturados"? Hablamos del order by.
+6. Proyección a DTO (constructor expression)
+
+```
+FROM: __
+
+JOINs: __, __
+
+WHERE: issuedAt != null, rango, status opcional
+
+GROUP BY: __
+
+ORDER BY: __ desc
+
+SELECT DTO
+```
