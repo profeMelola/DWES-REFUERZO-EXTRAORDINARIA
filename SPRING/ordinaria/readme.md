@@ -81,6 +81,10 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 ![alt text](image-2.png)
 
+### EJEMPLOS DE RESPUESTAS CON ERROR (Obligatorio completar y usar ApiErrorResponse)
+
+![alt text](image-3.png)
+
 ## 3. INFORME DE SERVICIOS MÁS FACTURADOS
 
 ```
