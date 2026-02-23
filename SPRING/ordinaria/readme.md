@@ -89,7 +89,7 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 <img width="150" height="150" alt="Licencia de Flaticon" src="https://github.com/user-attachments/assets/ffd7778e-7786-47a5-94c0-53554ebdf584" />
 
-1. Reportar todos los duplicados detectados (no solo el primero)
+1. Reportar todos los servicios duplicados detectados (no solo el primero)
 2. IVA Por servicio: cada MedicalService tiene su VatRate (o vatPercent), no fijo 21%.
 3. Decuento real: si el paciente tiene hasInsurance=true → aplicar DiscountType.INSURANCE_20 (20% sobre base, antes de IVA)
 4. Validación por límites: no permitir qty <= 0 ni qty > 20
