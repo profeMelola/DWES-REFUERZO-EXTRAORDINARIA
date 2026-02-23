@@ -87,7 +87,7 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 ### MEJORAS/AMPLIACIONES EXTRAORDINARIA
 
-<img width="512" height="512" alt="mejora-continua" src="https://github.com/user-attachments/assets/ffd7778e-7786-47a5-94c0-53554ebdf584" />
+<img width="200" height="200" alt="mejora-continua" src="https://github.com/user-attachments/assets/ffd7778e-7786-47a5-94c0-53554ebdf584" />
 
 
 1. Reportar todos los duplicados detectados (no solo el primero)
