@@ -81,9 +81,23 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 ![alt text](image-2.png)
 
-### EJEMPLOS DE RESPUESTAS CON ERROR (Obligatorio completar y usar ApiErrorResponse)
+### Ejemplos de respuestas con error (Obligatorio completar y usar ApiErrorResponse)
 
 ![alt text](image-3.png)
+
+### MEJORAS/AMPLIACIONES EXTRAORDINARIA
+
+<img width="512" height="512" alt="mejora-continua" src="https://github.com/user-attachments/assets/ffd7778e-7786-47a5-94c0-53554ebdf584" />
+
+
+1. Reportar todos los duplicados detectados (no solo el primero)
+2. IVA Por servicio: cada MedicalService tiene su VatRate (o vatPercent), no fijo 21%.
+3. Decuento real: si el paciente tiene hasInsurance=true → aplicar DiscountType.INSURANCE_20 (20% sobre base, antes de IVA)
+4. Validación por límites: no permitir qty <= 0 ni qty > 20
+5. Reglas: máximo 10 líneas por factura.
+6. Errores con i18n: todos los mensajes de excepción deben venir de messages.properties (o al menos mensajes constantes)
+
+---
 
 ## 3. INFORME DE SERVICIOS MÁS FACTURADOS
 
