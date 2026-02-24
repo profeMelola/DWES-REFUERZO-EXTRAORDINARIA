@@ -112,8 +112,11 @@ Endpoint de reporting que devuelve un ranking PAGINADO de los servicios médicos
 - TopServiceReport(mantén campos acorde captura)
 - InvoiceLineRepository
 
+---
+
 <img width="544" height="729" alt="imagen" src="https://github.com/user-attachments/assets/ec563349-5207-4262-ba42-7d34125cbd63" />
 
+---
 
 **La solución debe usar JPQL con proyección a DTO.** (joins + group by + agregaciones)
 
