@@ -120,8 +120,11 @@ Endpoint de reporting que devuelve un ranking PAGINADO de los servicios médicos
 
 **La solución debe usar JPQL con proyección a DTO.** (joins + group by + agregaciones)
 
-El filtro se hace por factura, no por cita (Invoice.issuedAt)
+El filtro se hace por factura, no por cita (Invoice.issuedAt):
+- Filtrar por Invoice.issuedAt mide cuándo se contabiliza la venta; filtrar por fecha de Appointment mide cuándo ocurrió la atención. 
+- En cuanto una cita se factura días/semanas después (o antes), los resultados cambian y el ranking ya no cumple el enunciado.
 
+Requisitos del filtro:
 - from (obligatorio) → fecha/hora mínima (incluida).
 - to (obligatorio) → fecha/hora máxima (incluida).
 - status (opcional) → si se informa, solo se consideran facturas con ese estado.
