@@ -20,7 +20,7 @@
 -   Si procede:
     -  `@Valid` en el DTO de entrada.
     -   Bean Validation (`@NotNull`, `@Positive`, `@NotBlank`, etc.).
--   `Content-Type: application/json` cuando aplique.
+
 
 
 ------------------------------------------------------------------------
