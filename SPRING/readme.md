@@ -42,6 +42,7 @@
 
 ## Uso adecuado
 
+``` 
   Caso                    Código
   ----------------------- -------------------
   Creación correcta       `201 Created`
@@ -51,6 +52,7 @@
   Recurso inexistente     `404 Not Found`
   Conflicto de negocio    `409 Conflict`
   No autorizado           `401/403`
+```
 
 ## Incorrecto si:
 
