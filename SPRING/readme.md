@@ -3,6 +3,7 @@
 > Que el endpoint "funcione" no es suficiente.\
 > Debe cumplir contrato HTTP, arquitectura, separación de
 > responsabilidades y reglas de negocio exactamente como se exige.
+> 
 > No se califica si no cumple con los siguientes criterios
 
 ------------------------------------------------------------------------
