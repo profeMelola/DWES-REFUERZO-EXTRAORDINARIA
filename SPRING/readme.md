@@ -58,7 +58,7 @@
 
 -   Se devuelve `200` ante errores.
 -   Se usa `500` para errores previsibles de negocio.
--   No se gestionan excepciones correctamente con `@ControllerAdvice`).
+-   No se gestionan excepciones correctamente con `@ControllerAdvice`.
 
 ------------------------------------------------------------------------
 
