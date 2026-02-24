@@ -104,15 +104,7 @@ Cada requisito funcional del enunciado debe:
 2.  Estar en la capa correcta (Service).
 3.  Lanzar la excepción adecuada.
 
-## Ejemplos típicos
-
--   Recurso principal debe existir (`404`).
--   No duplicados.
--   No permitir estado inválido.
--   Conflictos (`409`).
--   Validaciones adicionales explícitas.
--   Filtros correctamente aplicados.
--   
+  
 ------------------------------------------------------------------------
 
 # Paginación y filtros
