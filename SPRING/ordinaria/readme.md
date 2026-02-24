@@ -106,14 +106,16 @@ GET /api/reports/top-services
 
 Endpoint de reporting que devuelve un ranking PAGINADO de los servicios médicos más facturados en un intervalo de tiempo, filtrando por la fecha de emisión de la factura.
 
-COMPLETA LAS CLASES QUE SE PROPORCIONAN:
-
+**Completa las clases que se proporcionan:**
 - ReportController
 - ReportService
 - TopServiceReport(mantén campos acorde captura)
 - InvoiceLineRepository
-  
-La solución debe usar JPQL con proyección a DTO. (joins + group by + agregaciones)
+
+<img width="544" height="729" alt="imagen" src="https://github.com/user-attachments/assets/ec563349-5207-4262-ba42-7d34125cbd63" />
+
+
+**La solución debe usar JPQL con proyección a DTO.** (joins + group by + agregaciones)
 
 El filtro se hace por factura, no por cita (Invoice.issuedAt)
 
