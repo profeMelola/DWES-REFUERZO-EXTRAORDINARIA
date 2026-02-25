@@ -77,6 +77,21 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 ![alt text](image-1.png)
 
+```
+{
+  "lines": [
+    {
+      "medicalServiceId": 6,
+      "qty": 1
+    },
+    {
+      "medicalServiceId": 5,
+      "qty": 2
+    }
+  ]
+}
+```
+
 ### Response
 
 ![alt text](image-2.png)
@@ -210,3 +225,4 @@ La operación debe ser transaccional (@Transactional).
 ### Respuesta esperada
 
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
+
