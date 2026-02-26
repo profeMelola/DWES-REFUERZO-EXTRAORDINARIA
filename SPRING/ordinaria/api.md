@@ -194,7 +194,7 @@ En el proyecto Clinic API, ya existe el endpoint que emite una factura para una 
 ### Ahora se pide implementar un endpoint para marcar una factura como pagada:
 
 ```
-PATCH /api/invoices/{invoiceId} (actualizando campos de pago y estado)
+PATCH /api/invoices/{id} (actualizando campos de pago y estado)
 ```
 
 ### DTO de entrada
@@ -225,4 +225,5 @@ La operación debe ser transaccional (@Transactional).
 ### Respuesta esperada
 
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
+
 
