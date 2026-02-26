@@ -75,6 +75,7 @@ Controller → Service → Repository
 -   Solo gestiona HTTP.
 -   No contiene lógica de negocio.
 -   No accede directamente al repository.
+-   Cada endpoint devuelve siempre un ResponseEntity
 
 ### Service
 
