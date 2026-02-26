@@ -110,6 +110,9 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 4. Validación por límites: no permitir qty <= 0 ni qty > 20
 5. Reglas: máximo 10 líneas por factura.
 6. Errores con i18n: todos los mensajes de excepción deben venir de messages.properties (o al menos mensajes constantes)
+7. SEGURIDAD:
+  - Fase 1 :Usar jwt.properties para las propiedades usadas en la creación del token JWT.
+  - Fase 2: Usar .env para guardar dichas propiedades.
 
 ---
 
@@ -225,6 +228,7 @@ La operación debe ser transaccional (@Transactional).
 ### Respuesta esperada
 
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
+
 
 
 
