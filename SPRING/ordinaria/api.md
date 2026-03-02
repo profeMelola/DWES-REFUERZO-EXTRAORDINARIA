@@ -104,7 +104,7 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 <img width="150" height="150" alt="Licencia de Flaticon" src="https://github.com/user-attachments/assets/ffd7778e-7786-47a5-94c0-53554ebdf584" />
 
-1. Reportar todos los servicios duplicados detectados (no solo el primero):
+1. **Reportar todos los servicios duplicados detectados (no solo el primero):**
 
 Probad con este json en el body del request (payload):
 
@@ -148,24 +148,54 @@ por:
 <code>"Duplicate medical service ids in lines: 6, 4"</code>
 
 
-2. IVA Por servicio: cada MedicalService tiene su VatRate (o vatPercent), no fijo 21%.
+2. **IVA Por servicio: cada MedicalService tiene su VatRate (o vatPercent), no fijo 21%.**
 
 Mejor cambiar el modelo añadiendo en MedicalService la propiedad:
 
 <code>private VatRate vatRate = VatRate.VAT_21;</code>
 
-3. Decuento real: si el paciente tiene hasInsurance=true → aplicar DiscountType.INSURANCE_20 (20% sobre base, antes de IVA)
+3. **Descuento real: si el paciente tiene hasInsurance=true → aplicar DiscountType.INSURANCE_20 (20% sobre base, antes de IVA)**
 
 Mejor cambiar el modelo añadiendo en Patient la propiedad: 
 
 <code>private boolean hasInsurance = false;</code>
 
-4. Validación por límites: no permitir qty <= 0 ni qty > 20
-5. Reglas: máximo 10 líneas por factura.
-6. Errores con i18n: todos los mensajes de excepción deben venir de messages.properties (o al menos mensajes constantes)
-7. SEGURIDAD:
+4. **Validación por límites: no permitir qty <= 0 ni qty > 20**
+5. **Reglas: máximo 10 líneas por factura.**
+6. **Errores con i18n:** todos los mensajes de excepción deben venir de messages.properties (o al menos mensajes constantes)
+7. **SEGURIDAD:**
   - Fase 1 :Usar jwt.properties para las propiedades usadas en la creación del token JWT.
   - Fase 2: Usar .env para guardar dichas propiedades.
+8. Haz la prueba de eliminar el save al pagar la factura. ¿Se guardan los datos en la BD?
+  - NO es necesario llamar a invoiceRepository.save(invoice)
+  - findById() devuelve una entidad gestionada (managed) por el EntityManager.
+  - Estás dentro de una transacción (@Transactional).
+  - Modificas campos del objeto.
+  - Al finalizar la transacción, Hibernate detecta cambios y ejecuta automáticamente el UPDATE.
+  - Mientras la entidad esté managed y dentro de una transacción activa, JPA sincroniza automáticamente los cambios.
+9. Etiqueta JPA **@PreUpdate:**
+
+Añadir en la entidad Invoice:
+
+```
+    // Se ejecuta cuando la entidad es modificada y sincronizada con la BD.
+    @PreUpdate
+    private void preUpdate() {
+
+        // Si la factura pasa a PAID y aún no tiene fecha de pago
+        if (this.status == InvoiceStatus.PAID && this.paidAt == null) {
+            this.paidAt = LocalDateTime.now();
+        }
+
+    }
+```
+
+Comentar en el servicio:
+
+```
+invoice.setPaidAt(LocalDateTime.now());
+```
+
 
 ---
 
@@ -281,6 +311,7 @@ La operación debe ser transaccional (@Transactional).
 ### Respuesta esperada
 
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
+
 
 
 
