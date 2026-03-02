@@ -104,9 +104,62 @@ La factura debe persistirse junto con todas sus líneas en la base de datos en l
 
 <img width="150" height="150" alt="Licencia de Flaticon" src="https://github.com/user-attachments/assets/ffd7778e-7786-47a5-94c0-53554ebdf584" />
 
-1. Reportar todos los servicios duplicados detectados (no solo el primero)
+1. Reportar todos los servicios duplicados detectados (no solo el primero):
+
+Probad con este json en el body del request (payload):
+
+```
+{
+  "lines": [
+    {
+      "medicalServiceId": 6,
+      "qty": 1
+    },
+    {
+      "medicalServiceId": 6,
+      "qty": 2
+    },
+    {
+      "medicalServiceId": 5,
+      "qty": 2
+    },
+    {
+      "medicalServiceId": 4,
+      "qty": 2
+    },
+    {
+      "medicalServiceId": 2,
+      "qty": 2
+    },
+    {
+      "medicalServiceId": 4,
+      "qty": 2
+    }
+  ]
+}
+```
+
+Cambiamos el mensaje de error de la excepción:
+
+<code>"Duplicate medical service id in lines: 6"</code>
+
+por:
+
+<code>"Duplicate medical service ids in lines: 6, 4"</code>
+
+
 2. IVA Por servicio: cada MedicalService tiene su VatRate (o vatPercent), no fijo 21%.
+
+Mejor cambiar el modelo añadiendo en MedicalService la propiedad:
+
+<code>private VatRate vatRate = VatRate.VAT_21;</code>
+
 3. Decuento real: si el paciente tiene hasInsurance=true → aplicar DiscountType.INSURANCE_20 (20% sobre base, antes de IVA)
+
+Mejor cambiar el modelo añadiendo en Patient la propiedad: 
+
+<code>private boolean hasInsurance = false;</code>
+
 4. Validación por límites: no permitir qty <= 0 ni qty > 20
 5. Reglas: máximo 10 líneas por factura.
 6. Errores con i18n: todos los mensajes de excepción deben venir de messages.properties (o al menos mensajes constantes)
