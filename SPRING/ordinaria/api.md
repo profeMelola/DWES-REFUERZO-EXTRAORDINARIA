@@ -166,7 +166,7 @@ Mejor cambiar el modelo añadiendo en Patient la propiedad:
 7. **SEGURIDAD:**
   - Fase 1 :Usar jwt.properties para las propiedades usadas en la creación del token JWT.
   - Fase 2: Usar .env para guardar dichas propiedades.
-8. Haz la prueba de eliminar el save al pagar la factura. ¿Se guardan los datos en la BD?
+8. **Haz la prueba de eliminar el save al pagar la factura. ¿Se guardan los datos en la BD?**
   - NO es necesario llamar a invoiceRepository.save(invoice)
   - findById() devuelve una entidad gestionada (managed) por el EntityManager.
   - Estás dentro de una transacción (@Transactional).
@@ -311,6 +311,7 @@ La operación debe ser transaccional (@Transactional).
 ### Respuesta esperada
 
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
+
 
 
 
