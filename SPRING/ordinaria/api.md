@@ -166,14 +166,15 @@ Mejor cambiar el modelo añadiendo en Patient la propiedad:
 7. **SEGURIDAD:**
   - Fase 1 :Usar jwt.properties para las propiedades usadas en la creación del token JWT.
   - Fase 2: Usar .env para guardar dichas propiedades.
-8. **Haz la prueba de eliminar el save al pagar la factura. ¿Se guardan los datos en la BD?**
+8. **Usar un dto de error más complejo para tener un array de errores con sus mensajes:** @ExceptionHandler(MethodArgumentNotValidException.class)
+9. **Haz la prueba de eliminar el save al pagar la factura. ¿Se guardan los datos en la BD?**
   - NO es necesario llamar a invoiceRepository.save(invoice)
   - findById() devuelve una entidad gestionada (managed) por el EntityManager.
   - Estás dentro de una transacción (@Transactional).
   - Modificas campos del objeto.
   - Al finalizar la transacción, Hibernate detecta cambios y ejecuta automáticamente el UPDATE.
   - Mientras la entidad esté managed y dentro de una transacción activa, JPA sincroniza automáticamente los cambios.
-9. Etiqueta JPA **@PreUpdate:**
+10. Etiqueta JPA **@PreUpdate:**
 
 Añadir en la entidad Invoice:
 
@@ -311,6 +312,7 @@ La operación debe ser transaccional (@Transactional).
 ### Respuesta esperada
 
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
+
 
 
 
