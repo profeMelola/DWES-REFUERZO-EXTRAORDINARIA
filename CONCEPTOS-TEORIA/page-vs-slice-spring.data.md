@@ -6,7 +6,7 @@ impacto en rendimiento son distintos.
 
 ------------------------------------------------------------------------
 
-## 1. Page`<T>`{=html} --- Paginación con metadatos completos
+## 1. Page`<T>`--- Paginación con metadatos completos
 
 `Page` extiende `Slice` y añade información global sobre el dataset
 completo.
@@ -45,7 +45,7 @@ Page<Invoice> findByStatus(InvoiceStatus status, Pageable pageable);
 
 ------------------------------------------------------------------------
 
-## 2. Slice`<T>`{=html} --- Paginación ligera
+## 2. Slice`<T>` --- Paginación ligera
 
 `Slice` solo permite saber si existe una página siguiente, pero no
 conoce el total global.
