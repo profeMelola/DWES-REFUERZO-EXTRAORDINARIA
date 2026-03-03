@@ -270,7 +270,7 @@ SELECT DTO
 
 ---
 
-## RETO: Pagar una factura (cambio de estado PENDING → PAID)
+## RETO 1: Pagar una factura (cambio de estado PENDING → PAID)
 
 En el proyecto Clinic API, ya existe el endpoint que emite una factura para una cita:
 
@@ -314,7 +314,30 @@ La operación debe ser transaccional (@Transactional).
 200 OK devolviendo InvoiceResponse (incluyendo estado, paidAt y paymentMethod)
 
 
+---
 
+## RETO 2: Servicios médicos con o sin facturación
+
+Devolver todos los servicios médicos, aunque no hayan sido facturados nunca, mostrando sus métricas agregadas en un intervalo de fechas.
+
+<code>GET /api/reports/services-summary</code>
+
+### Parámetros:
+- from (obligatorio)
+- to (obligatorio)
+- status (opcional)
+
+### Devolver:
+
+```
+public record ServiceSummaryReport(
+    Long serviceId,
+    String serviceName,
+    long invoiceLinesCount,
+    long totalQuantity,
+    BigDecimal totalBilledAmount
+) {}
+```
 
 
 
