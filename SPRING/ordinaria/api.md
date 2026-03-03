@@ -223,8 +223,8 @@ Endpoint de reporting que devuelve un ranking PAGINADO de los servicios médicos
 **La solución debe usar JPQL con proyección a DTO.** (joins + group by + agregaciones)
 
 El filtro se hace por factura, no por cita (Invoice.issuedAt):
-- Filtrar por Invoice.issuedAt mide cuándo se contabiliza la venta; filtrar por fecha de Appointment mide cuándo ocurrió la atención. 
-- En cuanto una cita se factura días/semanas después (o antes), los resultados cambian y el ranking ya no cumple el enunciado.
+- Filtrar por Invoice.issuedAt (emitida en) mide cuándo se contabiliza la venta
+- Filtrar por fecha de Appointment mide cuándo ocurrió la atención sanitaria (cita médica). 
 
 Requisitos del filtro:
 - from (obligatorio) → fecha/hora mínima (incluida).
@@ -270,7 +270,7 @@ SELECT DTO
 
 ---
 
-## Reto: Pagar una factura (cambio de estado PENDING → PAID)
+## RETO: Pagar una factura (cambio de estado PENDING → PAID)
 
 En el proyecto Clinic API, ya existe el endpoint que emite una factura para una cita:
 
