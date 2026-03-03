@@ -124,13 +124,7 @@ Permite:
 -   Si solo navega hacia adelante → usa `Slice`
 -   En reporting complejo → normalmente `Slice` es mejor opción
 
-------------------------------------------------------------------------
 
-## Conclusión
-
-`Page` implica conocimiento global del dataset y requiere una query de
-conteo.\
-`Slice` es una estrategia más ligera orientada a navegación incremental.
 
 La elección no es solo de API, sino de estrategia de acceso a datos y
 rendimiento.
