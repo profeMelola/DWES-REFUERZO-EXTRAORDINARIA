@@ -42,3 +42,28 @@ Tras una actualización correcta, el usuario debe ser redirigido al formulario i
 - Los errores de validación deben mostrarse en el formulario acorde a las capturas de pantalla.
 
 ![alt text](image-6.png)
+
+Flujo completo:
+
+```
+POST /profile/edit
+      ↓
+Spring mapea formulario → DTO
+      ↓
+Validación automática
+      ↓
+Validación manual password
+      ↓
+¿Errores?
+      ├─ SI → volver a profile/edit
+      └─ NO
+            ↓
+buscar usuario autenticado
+            ↓
+actualizar perfil
+            ↓
+añadir flash message
+            ↓
+redirect:/profile/edit
+
+```
