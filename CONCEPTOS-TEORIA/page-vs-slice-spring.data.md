@@ -81,6 +81,7 @@ No se ejecuta `COUNT(*)`.
 
 ## 3. Comparativa rápida
 
+```
   Característica               Page          Slice
   ---------------------------- ------------- ---------------
   Query adicional COUNT        Sí            No
@@ -89,6 +90,7 @@ No se ejecuta `COUNT(*)`.
   Rendimiento                  Más costoso   Más eficiente
   Ideal para admin panel       Sí            No ideal
   Ideal para infinite scroll   No óptimo     Sí
+```
 
 ------------------------------------------------------------------------
 
