@@ -316,18 +316,36 @@ La operación debe ser transaccional (@Transactional).
 
 ---
 
-## RETO 2: Servicios médicos con o sin facturación
+## RETO 2: Resumen de servicios médicos facturados (incluyendo no facturados)
 
-Devolver todos los servicios médicos, aunque no hayan sido facturados nunca, mostrando sus métricas agregadas en un intervalo de fechas.
+Implementar un endpoint de reporting que devuelva todos los servicios médicos del catálogo, aunque no tengan ninguna línea de factura en el intervalo solicitado.
 
 <code>GET /api/reports/services-summary</code>
 
-### Parámetros:
-- from (obligatorio)
-- to (obligatorio)
-- status (opcional)
 
-### Devolver:
+### Query params
+
+- from (obligatorio): fecha/hora de inicio del intervalo (incluida).
+- to (obligatorio): fecha/hora de fin del intervalo (incluida).
+- status (opcional): filtra por estado de factura (Invoice.status).
+
+### Validaciones
+
+- from y to son obligatorios.
+- from <= to (si no, 400 Bad Request).
+- status si se envía debe ser un valor válido del enum InvoiceStatus (si no, 400 Bad Request).
+
+### Reglas de negocio
+
+Se deben devolver todas las filas de MedicalService (aunque no existan InvoiceLine asociadas).
+
+Cada servicio aparece exactamente una vez en la respuesta.
+
+### Ordenación
+
+<code>ORDER BY serviceName ASC</code>
+
+### DTO de salida
 
 ```
 public record ServiceSummaryReport(
@@ -339,6 +357,26 @@ public record ServiceSummaryReport(
 ) {}
 ```
 
+Ejemplo:
+
+```
+[
+  {
+    "serviceId": 1,
+    "serviceName": "Consulta general",
+    "invoiceLinesCount": 12,
+    "totalQuantity": 12,
+    "totalBilledAmount": 600.00
+  },
+  {
+    "serviceId": 2,
+    "serviceName": "Radiografía",
+    "invoiceLinesCount": 0,
+    "totalQuantity": 0,
+    "totalBilledAmount": 0.00
+  }
+]
+```
 
 
 
