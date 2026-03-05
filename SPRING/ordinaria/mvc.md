@@ -86,8 +86,10 @@ Adapta la aplicación para garantizar que, al añadir entradas al carrito:
 - No se pueda superar el número máximo permitido por la categoría del tipo de entrada.
 - Si el tipo de entrada ya existe en el carrito, la cantidad total resultante tampoco supere dicho límite.
 - En caso de intento no válido:
+
       - El carrito no debe modificarse.
-      - Debe mostrarse un mensaje informativo en la página de detalle del evento “You can buy at most 4 ticket(s) for VIP. You already have 3 in your cart.”
+      - Debe mostrarse un mensaje informativo en la página de detalle del evento 
+            <code>“You can buy at most 4 ticket(s) for VIP. You already have 3 in your cart.”</code>
       - El mensaje debe mostrarse una sola vez y desaparecer al recargar la página.
 
 ### 3.3. Descuento por completar entradas VIP
@@ -99,6 +101,7 @@ Para incentivar que el usuario complete dicho máximo, se debe aplicar una regla
 - El descuento se aplica únicamente a las entradas añadidas en esa operación, no a las que ya estaban en el carrito.
 - Si el carrito no cumplía previamente la condición (por ejemplo, estaba vacío), no se aplica descuento, aunque se añadan 4 entradas VIP de una sola vez.
 - Ejemplo:
+
       - Si el carrito contiene 3 entradas VIP y se añade 1 más, esa nueva entrada VIP se añade con un 10 % de descuento.
       - Si el carrito está vacío y se añaden 4 entradas VIP de una sola vez, no se aplica descuento.
       - En el carrito debe mostrarse una línea diferenciada para las entradas con descuento (aunque correspondan al mismo tipo de entrada) y, tras la operación, debe mostrarse un mensaje informativo en el detalle del evento indicando que se ha aplicado el descuento
