@@ -141,7 +141,7 @@ INSERT INTO doctor_specialties (doctor_id, specialty_id, level, active, since_da
 
 ---
 
-## Prerequisitos — Datos base
+## Prerequisitos — Datos base (opcional)
 
 Antes de probar la relación, crea al menos 2 doctores y 2 especialidades.
 
