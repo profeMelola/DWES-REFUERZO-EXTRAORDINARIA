@@ -66,3 +66,240 @@ Debes adaptar el mapeo JPA para reflejar el modelo nuevo:
 - No usar `@ManyToMany` con `@JoinTable` directamente: **no aplica** porque la tabla intermedia tiene columnas extra.
 - No eliminar los atributos de la relación (deben seguir en `doctor_specialties`).
 
+---
+
+# Guía de pruebas — Relación N:M Doctor ↔ Specialty
+
+## Entidades involucradas
+
+| Tabla | Entidad JPA |
+|---|---|
+| `doctors` | `Doctor` |
+| `specialties` | `Specialty` |
+| `doctor_specialties` | `DoctorSpecialty` (tabla intermedia con atributos) |
+
+---
+
+## Prerequisitos — Datos base
+
+Antes de probar la relación, crea al menos 2 doctores y 2 especialidades.
+
+### Crear doctores
+
+```http
+POST /doctors
+Content-Type: application/json
+
+{
+  "licenseNumber": "LIC-001",
+  "fullName": "Dr. Ana García",
+  "email": "ana.garcia@clinica.com"
+}
+```
+
+```http
+POST /doctors
+Content-Type: application/json
+
+{
+  "licenseNumber": "LIC-002",
+  "fullName": "Dr. Luis Pérez",
+  "email": "luis.perez@clinica.com"
+}
+```
+
+### Crear especialidades
+
+```http
+POST /specialties
+Content-Type: application/json
+
+{
+  "code": "CARDIO",
+  "name": "Cardiología"
+}
+```
+
+```http
+POST /specialties
+Content-Type: application/json
+
+{
+  "code": "NEURO",
+  "name": "Neurología"
+}
+```
+
+---
+
+## Pruebas de la relación
+
+### Prueba 1 — Asignar una especialidad a un doctor ✅ 201
+
+Verifica que se crea correctamente la PK compuesta `(doctor_id, specialty_id)` y los atributos propios de la relación.
+
+```http
+POST /doctors/1/specialties
+Content-Type: application/json
+
+{
+  "specialtyId": 1,
+  "level": "SENIOR",
+  "sinceDate": "2020-03-15",
+  "consultationFeeOverride": 85.00
+}
+```
+
+**Resultado esperado:** `201 Created` con el registro en `doctor_specialties`.
+
+---
+
+### Prueba 2 — Distintos doctores pueden compartir la misma especialidad ✅ 201
+
+El doctor 2 también puede tener la especialidad 1 (Cardiología). Esto prueba que la restricción de unicidad es por par `(doctor_id, specialty_id)`, no por `specialty_id` solo.
+
+```http
+POST /doctors/2/specialties
+Content-Type: application/json
+
+{
+  "specialtyId": 1,
+  "level": "JUNIOR",
+  "sinceDate": "2022-06-01",
+  "consultationFeeOverride": null
+}
+```
+
+**Resultado esperado:** `201 Created`. Ahora dos doctores comparten Cardiología.
+
+---
+
+### Prueba 3 — Un doctor puede tener varias especialidades ✅ 201
+
+El doctor 1 añade una segunda especialidad (Neurología).
+
+```http
+POST /doctors/1/specialties
+Content-Type: application/json
+
+{
+  "specialtyId": 2,
+  "level": "EXPERT",
+  "sinceDate": "2019-01-10",
+  "consultationFeeOverride": 120.00
+}
+```
+
+**Resultado esperado:** `201 Created`. El doctor 1 ahora tiene Cardiología y Neurología.
+
+---
+
+### Prueba 4 — Un doctor NO puede repetir la misma especialidad ✅ 409
+
+Intenta asignar de nuevo la especialidad 1 al doctor 1. La PK compuesta debe rechazarlo.
+
+```http
+POST /doctors/1/specialties
+Content-Type: application/json
+
+{
+  "specialtyId": 1,
+  "level": "EXPERT",
+  "sinceDate": "2024-01-01",
+  "consultationFeeOverride": 200.00
+}
+```
+
+**Resultado esperado:** `409 Conflict`.  
+> Esta es la prueba más importante. Si `equals`/`hashCode` están bien implementados en `DoctorSpecialtyId`, el conflicto se detecta correctamente.
+
+---
+
+### Prueba 5 — Listar las especialidades de un doctor ✅ 200
+
+Verifica que el `Set<DoctorSpecialty>` se carga con todos los atributos de la tabla intermedia.
+
+```http
+GET /doctors/1/specialties
+```
+
+**Resultado esperado:** Lista con Cardiología (SENIOR) y Neurología (EXPERT).
+
+---
+
+### Prueba 6 — Listar los doctores de una especialidad ✅ 200
+
+Prueba el lado inverso de la relación desde `Specialty`.
+
+```http
+GET /specialties/1/doctors
+```
+
+**Resultado esperado:** Lista con Dr. Ana García y Dr. Luis Pérez.
+
+---
+
+### Prueba 7 — Actualizar atributos de la relación ✅ 200
+
+Modifica campos de la tabla intermedia sin tocar las entidades `Doctor` ni `Specialty`.
+
+```http
+PATCH /doctors/1/specialties/1
+Content-Type: application/json
+
+{
+  "level": "EXPERT",
+  "consultationFeeOverride": 150.00
+}
+```
+
+**Resultado esperado:** `200 OK`. Solo cambia la fila en `doctor_specialties`.
+
+---
+
+### Prueba 8 — Eliminar una especialidad de un doctor ✅ 204
+
+Prueba el `orphanRemoval = true`. Solo debe borrarse la fila intermedia, no el doctor ni la especialidad.
+
+```http
+DELETE /doctors/1/specialties/2
+```
+
+**Resultado esperado:** `204 No Content`.  
+Verificación adicional:
+- `GET /doctors/1/specialties` → solo devuelve Cardiología.
+- `GET /specialties/2` → Neurología sigue existiendo.
+- `GET /doctors/1` → Dr. Ana García sigue existiendo.
+
+---
+
+## Orden de ejecución recomendado
+
+```
+1.  POST /doctors          → doctor 1 (LIC-001)            ✓ 201
+2.  POST /doctors          → doctor 2 (LIC-002)            ✓ 201
+3.  POST /specialties      → especialidad 1 (CARDIO)       ✓ 201
+4.  POST /specialties      → especialidad 2 (NEURO)        ✓ 201
+5.  POST /doctors/1/specialties  → (1, CARDIO, SENIOR)     ✓ 201
+6.  POST /doctors/2/specialties  → (2, CARDIO, JUNIOR)     ✓ 201  ← doctores comparten especialidad
+7.  POST /doctors/1/specialties  → (1, NEURO, EXPERT)      ✓ 201  ← doctor con varias especialidades
+8.  POST /doctors/1/specialties  → (1, CARDIO, EXPERT)     ✓ 409  ← especialidad duplicada bloqueada
+9.  GET  /doctors/1/specialties                            ✓ 200  ← devuelve CARDIO + NEURO
+10. GET  /specialties/1/doctors                            ✓ 200  ← devuelve doctor 1 y doctor 2
+11. PATCH /doctors/1/specialties/1                         ✓ 200  ← solo cambia tabla intermedia
+12. DELETE /doctors/1/specialties/2                        ✓ 204  ← orphanRemoval en acción
+13. GET  /doctors/1/specialties                            ✓ 200  ← solo CARDIO queda
+14. GET  /specialties/2                                    ✓ 200  ← NEURO sigue existiendo
+```
+
+---
+
+## Reglas del modelo verificadas
+
+| Regla | Prueba que la verifica |
+|---|---|
+| Un doctor puede tener varias especialidades | Pruebas 5 y 7 |
+| Un doctor NO puede repetir la misma especialidad | Prueba 4 → 409 |
+| Varios doctores pueden compartir la misma especialidad | Pruebas 2 y 6 |
+| La tabla intermedia tiene atributos propios | Pruebas 1, 7 |
+| `orphanRemoval` borra solo la fila intermedia | Prueba 8 |
