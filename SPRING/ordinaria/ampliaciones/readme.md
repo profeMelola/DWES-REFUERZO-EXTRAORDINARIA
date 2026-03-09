@@ -70,6 +70,67 @@ Debes adaptar el mapeo JPA para reflejar el modelo nuevo:
 
 # Guía de pruebas — Relación N:M Doctor ↔ Specialty
 
+<img src="image.png" height="150px">
+
+## Set de datos nuevos para pruebas
+
+```
+-- -------------------------
+-- DOCTORS (6)
+-- -------------------------
+INSERT INTO doctors (license_number, full_name, email, active) VALUES
+    ('LIC-100', 'Dra. Marta López',   'marta@demo.com',       true),
+    ('LIC-200', 'Dr. Juan Ruiz',      'juan@demo.com',        true),
+    ('LIC-300', 'Dra. Sofía Vega',    'sofia@demo.com',       true),
+    ('LIC-400', 'Dr. Pablo Santos',   'pablo@demo.com',       true),
+    ('LIC-500', 'Dra. Irene Cano',    'irene.cano@demo.com',  true),
+    ('LIC-600', 'Dr. Marcos Díaz',    'marcos@demo.com',      false); -- inactivo
+
+-- -------------------------
+-- MEDICAL SERVICES (6)
+-- -------------------------
+INSERT INTO medical_services (code, name, base_price, active) VALUES
+    ('CONS-GEN',    'Consulta general',         50.00,  true),
+    ('DERM-REV',    'Revisión dermatológica',    80.00,  true),
+    ('CARD-ECG',    'ECG / Cardiología',        120.00,  true),
+    ('PED-CONT',    'Control pediatría',         45.00,  true),
+    ('VAC-FLU',     'Vacuna gripe',              25.00,  true),
+    ('NUTRI-PLAN',  'Plan nutrición',            60.00,  true);
+
+-- -------------------------
+-- SPECIALTIES — catálogo (antes era enum)
+-- IDs esperados: 1=DERMATOLOGY, 2=GENERAL_MED, 3=CARDIOLOGY, 4=PEDIATRICS, 5=NUTRITION
+-- -------------------------
+INSERT INTO specialties (code, name, active) VALUES
+    ('DERMATOLOGY', 'Dermatología',      true),
+    ('GENERAL_MED', 'Medicina General',  true),
+    ('CARDIOLOGY',  'Cardiología',       true),
+    ('PEDIATRICS',  'Pediatría',         true),
+    ('NUTRITION',   'Nutrición',         true);
+
+-- -------------------------
+-- DOCTOR_SPECIALTIES — tabla intermedia con atributos
+-- doctor_id | specialty_id | level      | active | since_date   | consultation_fee_override
+-- Mismos datos que antes, specialty reemplazada por su FK numérica
+-- -------------------------
+INSERT INTO doctor_specialties (doctor_id, specialty_id, level, active, since_date, consultation_fee_override) VALUES
+--  Dra. Marta López   → DERMATOLOGY (1) + GENERAL_MED (2)
+    (1, 1, 'SENIOR',     true,  '2020-01-01', null),
+    (1, 2, 'CONSULTANT', true,  '2017-05-01', 55.00),
+--  Dr. Juan Ruiz       → GENERAL_MED (2)
+    (2, 2, 'CONSULTANT', true,  '2018-01-01', null),
+--  Dra. Sofía Vega     → CARDIOLOGY (3) + GENERAL_MED (2)
+    (3, 3, 'SENIOR',     true,  '2016-09-15', 130.00),
+    (3, 2, 'JUNIOR',     true,  '2022-02-01', null),
+--  Dr. Pablo Santos    → PEDIATRICS (4)
+    (4, 4, 'CONSULTANT', true,  '2019-03-10', null),
+--  Dra. Irene Cano     → NUTRITION (5)
+    (5, 5, 'SENIOR',     true,  '2015-06-20', 70.00),
+--  Dr. Marcos Díaz     → GENERAL_MED (2) — inactivo en la relación igual que antes
+    (6, 2, 'JUNIOR',     false, '2023-01-01', null);
+```
+
+
 ## Entidades involucradas
 
 | Tabla | Entidad JPA |
@@ -303,3 +364,6 @@ Verificación adicional:
 | Varios doctores pueden compartir la misma especialidad | Pruebas 2 y 6 |
 | La tabla intermedia tiene atributos propios | Pruebas 1, 7 |
 | `orphanRemoval` borra solo la fila intermedia | Prueba 8 |
+
+---
+
