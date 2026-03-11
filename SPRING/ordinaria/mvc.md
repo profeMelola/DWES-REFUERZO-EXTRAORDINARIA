@@ -80,6 +80,8 @@ Implementa la funcionalidad necesaria para que, tras añadir un tipo de entrada,
 
 <code> "Added X ticket(s) to your cart."</code>
 
+[Flash Attributes y el patrón PRG](./prg.md)
+
 ### 3.2. Validación server-side real de compra
 
 Adapta la aplicación para garantizar que, al añadir entradas al carrito:
