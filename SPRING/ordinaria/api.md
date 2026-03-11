@@ -368,15 +368,17 @@ Ejemplo:
     "totalQuantity": 12,
     "totalBilledAmount": 600.00
   },
+.......
   {
-    "serviceId": 2,
-    "serviceName": "Radiografía",
+    "serviceId": 7,
+    "serviceName": "Estética",
     "invoiceLinesCount": 0,
     "totalQuantity": 0,
     "totalBilledAmount": 0.00
   }
 ]
 ```
+
 
 
 
