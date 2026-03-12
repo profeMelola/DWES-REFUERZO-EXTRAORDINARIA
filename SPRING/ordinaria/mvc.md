@@ -118,7 +118,7 @@ Para incentivar que el usuario complete dicho máximo, se debe aplicar una regla
 - Cart(modelo de sesión): operaciones simples sin reglas de negocios
 - Incluso podríamos separar en varios servicios, uno específico para el precio.
 
-Propuesta:
+**Propuesta:**
 
 ```
 service/
@@ -127,5 +127,28 @@ service/
     CartResult.java         ← resultado tipado
 controller/
   CartController.java       ← solo concerns web
+```
+
+**Imagina el controlador así:**
+
+```
+    @PostMapping("/cart/add")
+    public String add(
+            @Valid @ModelAttribute("addToCart") AddToCartForm form,
+            RedirectAttributes ra,
+            Locale locale
+    ) {
+        CartResult result = cartService.addToCart(form);
+
+        String flashKey   = result.success() ? "successMessage" : "errorMessage";
+        String message    = messageSource.getMessage(
+                result.messageKey(),
+                result.messageArgs(),
+                locale
+        );
+        ra.addFlashAttribute(flashKey, message);
+
+        return "redirect:/events/" + form.eventCode();
+    }
 ```
 
