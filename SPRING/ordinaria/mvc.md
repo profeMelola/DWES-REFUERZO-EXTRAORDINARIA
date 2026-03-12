@@ -125,7 +125,7 @@ Para incentivar que el usuario complete dicho máximo, se debe aplicar una regla
 ```
 service/
   CartService.java          ← lógica de negocio
-  result/
+dto/cart
     CartResult.java         ← resultado tipado
 controller/
   CartController.java       ← solo concerns web
@@ -153,6 +153,7 @@ controller/
         return "redirect:/events/" + form.eventCode();
     }
 ```
+
 
 
 
