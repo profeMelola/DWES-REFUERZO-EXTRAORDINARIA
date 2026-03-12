@@ -112,12 +112,20 @@ Para incentivar que el usuario complete dicho máximo, se debe aplicar una regla
 
 ## Mejora en el carrito
 
-Lo ideal es usar un CartService.
+- Lo ideal es usar un CartService.
+- El controlador se encarga de la petición http, llamaría al servicio, redirects...
+- CartService el método addToCart(...)
+- Cart(modelo de sesión): operaciones simples sin reglas de negocios
+- Incluso podríamos separar en varios servicios, uno específico para el precio.
 
-El controlador se encarga de la petición http, llamaría al servicio, redirects...
+Propuesta:
 
-CartService el método addToCart(...)
+```
+service/
+  CartService.java          ← lógica de negocio
+  result/
+    CartResult.java         ← resultado tipado
+controller/
+  CartController.java       ← solo concerns web
+```
 
-Cart(modelo de sesión): operaciones simples sin reglas de negocios
-
-Incluso podríamos separar en varios servicios, uno específico para el precio.
