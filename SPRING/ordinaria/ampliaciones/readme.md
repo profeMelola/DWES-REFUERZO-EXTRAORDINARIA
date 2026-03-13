@@ -195,6 +195,29 @@ Content-Type: application/json
 
 ## Pruebas de la relación
 
+Antes de implementar cada prueba, ten en cuenta la distribución recomendada:
+
+**DoctorController — el doctor es el agregado principal de la relación**
+
+- POST   /doctors/{id}/specialties            → asignar especialidad
+- GET    /doctors/{id}/specialties            → listar especialidades del doctor
+- PATCH  /doctors/{id}/specialties/{specId}   → actualizar atributos de la relación
+- DELETE /doctors/{id}/specialties/{specId}   → eliminar especialidad del doctor
+
+**SpecialtyController — consultas sobre el catálogo**
+
+- GET  /specialties                    → listar catálogo
+- GET  /specialties/{id}               → detalle de una especialidad
+- GET  /specialties/{id}/doctors       → qué doctores tienen esta especialidad
+
+**¿Por qué no un DoctorSpecialtyController?**
+
+Podrías verlo en algunos proyectos con una URL plana tipo /doctor-specialties, pero rompe la navegabilidad REST. 
+
+Los clientes esperan poder navegar el recurso desde su raíz natural, no tener que conocer el nombre de la tabla intermedia.
+
+La tabla intermedia DoctorSpecialty es un detalle de implementación JPA, no un recurso REST de primer nivel.
+
 ### Prueba 1 — Asignar una especialidad a un doctor ✅ 201
 
 Verifica que se crea correctamente la PK compuesta `(doctor_id, specialty_id)` y los atributos propios de la relación.
