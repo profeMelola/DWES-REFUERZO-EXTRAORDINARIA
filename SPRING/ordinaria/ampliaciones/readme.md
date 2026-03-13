@@ -212,7 +212,7 @@ Antes de implementar cada prueba, ten en cuenta la distribución recomendada:
 
 **¿Por qué no un DoctorSpecialtyController?**
 
-Podrías verlo en algunos proyectos con una URL plana tipo /doctor-specialties, pero rompe la navegabilidad REST. 
+Podrías ver en algunos proyectos con una **URL plana tipo /doctor-specialties, pero rompe la navegabilidad REST.**
 
 Los clientes esperan poder navegar el recurso desde su raíz natural, no tener que conocer el nombre de la tabla intermedia.
 
