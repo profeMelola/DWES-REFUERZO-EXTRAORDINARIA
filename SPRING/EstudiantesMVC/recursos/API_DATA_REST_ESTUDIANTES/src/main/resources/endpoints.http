@@ -1,0 +1,17 @@
+
+###
+GET http://localhost:8081/estudiantes/search/findByNia?nia=NIA_1002
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWluIiwiaWF0IjoxNzQwMTM4MTU1LCJleHAiOjE3NDAxNDE3NTV9.HdYr0694onVNJvrQ1wQzIoI9cgLCNcwaeqjZ_Ja8mGQ
+
+###
+GET http://localhost:8081/estudiantes/search/findByNombreAndPrimerApellidoAndSegundoApellido?nombre=Juan&primerApellido=Pérez&segundoApellido=Gómez
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWluIiwiaWF0IjoxNzQwMTM4MTU1LCJleHAiOjE3NDAxNDE3NTV9.HdYr0694onVNJvrQ1wQzIoI9cgLCNcwaeqjZ_Ja8mGQ
+
+###
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}

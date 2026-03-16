@@ -1,0 +1,13 @@
+###
+# Listado paginado de eventos ordenados por fecha de inicio ascendente
+GET http://localhost:8081/api/events?page=0&size=5&sort=startDateTime,asc
+###
+# Buscar eventos por código de ubicación
+GET http://localhost:8081/api/events/search/findByLocationCode?locationCode=BCN_FORUM&page=0&size=10
+###
+# Buscar evento por código de evento
+GET http://localhost:8081/api/events/search/findByCode?code=EVT_BCN_TECH_AI
+###
+# Ticket types para un evento específico por código de evento
+GET http://localhost:8081/api/ticketTypes/search/findByEventCode?eventCode=EVT_MAD_TECH_2026
+
