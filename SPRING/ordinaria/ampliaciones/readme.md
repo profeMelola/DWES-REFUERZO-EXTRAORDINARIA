@@ -309,6 +309,8 @@ GET /doctors/1/specialties
 
 **Resultado esperado:** Lista con Cardiología (SENIOR) y Neurología (EXPERT).
 
+[Join Fetch y el problema N+1](./join-fetch.md)
+
 ---
 
 ### Prueba 6 — Listar los doctores de una especialidad ✅ 200
