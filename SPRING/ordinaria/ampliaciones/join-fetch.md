@@ -411,7 +411,7 @@ Si en algún momento la regla de negocio *sí* permite el borrado del doctor, ha
 
 ---
 
-## Regla práctica
+## Regla práctica!!!!
 
 | Tipo de relación | Estrategia sugerida |
 |---|---|
@@ -421,8 +421,3 @@ Si en algún momento la regla de negocio *sí* permite el borrado del doctor, ha
 
 `Doctor → Appointment` es un caso de **agregación**: las citas tienen vida propia (pertenecen también al paciente, generan facturas), por lo que lo correcto es protegerlas con lógica de negocio explícita, no borrarlas en cascada.
 
----
-
-## Conclusión
-
-Usar `CascadeType.ALL` en relaciones de agregación traslada decisiones de negocio a la capa de persistencia, haciéndolas invisibles. La validación por código mantiene la **intención explícita** y permite mensajes de error significativos para el cliente, a cambio de algo más de código en la capa de servicio.
