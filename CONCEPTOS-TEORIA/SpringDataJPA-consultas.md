@@ -204,8 +204,11 @@ Los métodos por nombre se vuelven **inmanejables** cuando:
 
 ```java
 // Mejor con @Query que con nombre de método
-@Query("SELECT a FROM Appointment a JOIN FETCH a.doctor JOIN FETCH a.patient " +
-       "WHERE a.doctor.id = :doctorId AND a.status = :status")
+@Query("SELECT a
+          FROM Appointment a
+          JOIN FETCH a.doctor
+          JOIN FETCH a.patient 
+          WHERE a.doctor.id = :doctorId AND a.status = :status")
 List<Appointment> findWithDetailsByDoctorAndStatus(
     @Param("doctorId") Long doctorId,
     @Param("status") AppointmentStatus status);
