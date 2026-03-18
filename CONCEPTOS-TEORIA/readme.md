@@ -5,3 +5,5 @@
 3. [Transactional](./transactional.md)
 4. [Relaciones-JPA](./JPA-relaciones.md)
 5. [Estrategias LAZY-EAGER. Join Fetch. Strategias JPA](../SPRING/ordinaria/ampliaciones/join-fetch.md)
+6. [Comparativa JPA vs SpringDataJPA](https://github.com/profeMelola/DWES-03-2025-26/blob/main/APOYO_TEORIA/Comparativa_JPA_vs_SpringDataJPA.md)
+7. [Generación de consultas Spring Data JPA por nombre de método](./SpringDataJPA-consultas.md)
