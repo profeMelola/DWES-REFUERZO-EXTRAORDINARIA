@@ -193,7 +193,7 @@ Hibernate genera:
 ```
 SELECT ds.*
 FROM doctor_specialties ds
-INNER JOIN specialties s ON s.id = ds.specialty_id  -- solo para filtrar/navegar
+INNER JOIN specialties s ON s.id = ds.specialty_id
 WHERE ds.doctor_id = 1
 ```
 
