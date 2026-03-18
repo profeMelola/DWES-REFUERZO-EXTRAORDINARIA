@@ -233,14 +233,14 @@ Con 3 especialidades → **1 query** en total.
 ```
 Sin JOIN FETCH                                                      Con JOIN FETCH
 ──────────────────────────────                                      ──────────────────────────────
-Query 1: SELECT ds.*                        →                       Query 1: SELECT ds.*, s.*
-         WHERE doctor_id = 1                                        JOIN specialties s
-                                                                    WHERE doctor_id = 1
+Query 1: SELECT ds.*                        →                           Query 1: SELECT ds.*, s.*
+         WHERE doctor_id = 1                                            JOIN specialties s
+                                                                        WHERE doctor_id = 1
 Query 2: SELECT * FROM specialties WHERE id = 1   (mapper toca fila 1)
 Query 3: SELECT * FROM specialties WHERE id = 3   (mapper toca fila 2)
 Query 4: SELECT * FROM specialties WHERE id = 5   (mapper toca fila 3)
 
-Total: 4 queries                  Total: 1 query
+Total: 4 queries                                                        Total: 1 query
 
 ```
 
