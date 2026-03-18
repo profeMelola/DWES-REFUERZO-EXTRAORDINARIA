@@ -309,7 +309,7 @@ GET /doctors/1/specialties
 
 **Resultado esperado:** Lista con Cardiología (SENIOR) y Neurología (EXPERT).
 
-[Join Fetch y el problema N+1](./join-fetch.md)
+[Join Fetch y el problema N+1 - Estrategias JPA](./join-fetch.md)
 
 ---
 
