@@ -165,7 +165,9 @@ for (DoctorSpecialty ds : rows) {
 **Caso 1:**
 
 ```
-@Query("SELECT ds FROM DoctorSpecialty ds WHERE ds.doctor.id = :doctorId")
+@Query("SELECT ds 
+        FROM DoctorSpecialty ds 
+        WHERE ds.doctor.id = :doctorId")
 List<DoctorSpecialty> findByDoctorId(Long doctorId);
 ```
 
@@ -179,7 +181,10 @@ WHERE ds.doctor_id = 1
 **Caso 2:**
 
 ```
-@Query("SELECT ds FROM DoctorSpecialty ds JOIN ds.specialty WHERE ds.doctor.id = :doctorId")
+@Query("SELECT ds 
+        FROM DoctorSpecialty ds 
+        JOIN ds.specialty 
+        WHERE ds.doctor.id = :doctorId")
 List<DoctorSpecialty> findByDoctorId(Long doctorId);
 ```
 
@@ -205,7 +210,10 @@ SELECT * FROM specialties WHERE id = 5;  -- fila 3
 ### Con JOIN FETCH
 
 ```
-@Query("SELECT ds FROM DoctorSpecialty ds JOIN FETCH ds.specialty WHERE ds.doctor.id = :doctorId")
+@Query("SELECT ds 
+        FROM DoctorSpecialty ds 
+        JOIN FETCH ds.specialty 
+        WHERE ds.doctor.id = :doctorId")
 List<DoctorSpecialty> findByDoctorIdWithSpecialty(Long doctorId);
 ```
 
