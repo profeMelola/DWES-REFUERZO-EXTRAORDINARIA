@@ -1,4 +1,4 @@
-# API REST - Ampliación 1: catálogo de especialidades + relación N:M con atributos
+# 1. API REST - Ampliación 1: catálogo de especialidades + relación N:M con atributos
 
 Esta ampliación cambia el modelo para que las especialidades no sean un `VARCHAR/enum` embebido en la tabla intermedia, sino un **catálogo persistente** (`specialties`).  
 La relación `Doctor` ↔ `Specialty` es **N:M** en base de datos, y se implementa mediante una **entidad intermedia con atributos** (`doctor_specialties`).
@@ -392,3 +392,47 @@ Verificación adicional:
 
 ---
 
+# 2. Administración de usuarios y roles en una API REST segura
+
+En el proyecto ya existe una relación Many-to-Many entre las entidades AppUser y Role.
+
+Esta relación representa que:
+- un usuario puede tener varios roles;
+- un rol puede estar asignado a varios usuarios.
+
+No debes implementar login ni autenticación, porque eso ya forma parte de la seguridad del proyecto. 
+
+El objetivo es construir una API REST de administración para gestionar usuarios y roles, y comprobar que la relación Many-to-Many está bien modelada y bien programada.
+
+**Debes implementar endpoints para:**
+
+- Alta de roles
+- Modificación de roles
+- Borrado de roles
+- Alta de usuarios
+- Modificación de usuarios
+- Borrado de usuarios
+- Asignación y desasignación de roles a usuarios
+- Consulta de usuarios con sus roles
+- Consulta de roles con sus usuarios
+
+## Gestión de la relación Many-to-Many
+
+Debes permitir:
+- crear un usuario indicando una lista de roles existentes;
+- añadir uno o varios roles a un usuario ya existente;
+- quitar uno o varios roles de un usuario;
+- devolver la información del usuario con sus roles asociados.
+- listar todos los usuarios de un rol;
+- reemplazar todos los roles de un usuario por una nueva colección.
+
+## Restricciones y reglas de negocio
+
+- No se deben crear roles duplicados por nombre.
+- No se deben crear usuarios duplicados por username.
+- La contraseña debe almacenarse cifrada con BCrypt.
+- Al crear o modificar un usuario, los roles asignados deben existir previamente.
+- Eliminar un usuario no debe eliminar los roles del sistema.
+- Al eliminar un rol, debes decidir y justificar una estrategia:
+  - impedir el borrado si el rol está asignado a usuarios, o
+  - desasignarlo primero de los usuarios y después eliminarlo.
