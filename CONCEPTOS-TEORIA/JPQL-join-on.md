@@ -61,4 +61,59 @@ from Invoice i join i.lines l on l.quantity > 1
 > - El `ON` filtra *durante* el join (afecta especialmente a `LEFT JOIN`s).
 > - El `WHERE` filtra *después* del join.
 
+---
 
+**Otro ejemplo:**
+
+```java
+-- ❌ CON WHERE: convierte el LEFT JOIN en un INNER JOIN de facto
+from MedicalService s
+    left join s.lines l
+  where l.invoice.issuedAt >= :from   -- los servicios sin líneas tienen l = NULL
+  and l.invoice.issuedAt <= :to     -- NULL no pasa ningún filtro → desaparecen
+```
+- Un servicio sin facturas produce l = NULL tras el LEFT JOIN. 
+- En cuanto ese NULL llega al WHERE, la condición falla y la fila desaparece. 
+- Has perdido exactamente lo que querías conservar.
+
+```java
+-- ✅ CON ON: el filtro ocurre durante el join, el LEFT JOIN sigue siendo LEFT JOIN
+from MedicalService s
+    left join s.lines l
+        on l.invoice.issuedAt >= :from
+        and l.invoice.issuedAt <= :to
+```
+
+- Aquí el motor primero evalúa si una línea cumple la condición para unirse. 
+- Si no cumple, o no existe, el servicio igualmente aparece en el resultado con l = NULL. 
+- El LEFT JOIN hace su trabajo.
+
+## Evitar right join. Elige bien tu entidad raíz
+
+Por ejemplo, partir de InvoiceLine pero obtener los MedicalService con el right join:
+
+```java
+@Query("""
+    select new es.daw.clinicaapi.dto.report.ServiceSummaryReport(
+        s.id,
+        s.name,
+        coalesce(count(l),0L),
+        coalesce(sum(l.quantity),0L),
+        coalesce(cast(sum(l.unitPrice) as BigDecimal ), 0)
+        ) from InvoiceLine l
+            join l.invoice i
+            right join l.service s
+                on i.issuedAt >= :from
+                        and i.issuedAt <= :to
+                        and (:status is null or i.status = :status)
+        group by s.id
+            order by s.name asc
+    """)
+```
+
+Como regla general vamos a seguir estos criterios:
+
+- Los que SÍ tienen relación -> INNER JOIN desde la entidad con la FK
+- Todos, tengan o no relación -> LEFT JOIN desde la entidad "padre"
+- RIGHT JOIN -> Evítalo en JPQL, da la vuelta y usa LEFT JOIN
+    - Evita RIGHT JOIN en JPQL: elige bien tu entidad raíz
