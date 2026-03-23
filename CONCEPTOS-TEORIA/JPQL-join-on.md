@@ -90,6 +90,8 @@ from MedicalService s
 - La línea existe pero no cumple alguna condición (fecha fuera de rango, estado no coincide) → no se une, el servicio aparece con l = NULL.
 - El LEFT JOIN hace su trabajo.
 
+---
+
 ## Evitar right join. Elige bien tu entidad raíz
 
 Por ejemplo, partir de InvoiceLine pero obtener los MedicalService con el right join:
