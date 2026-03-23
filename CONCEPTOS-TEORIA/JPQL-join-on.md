@@ -80,12 +80,14 @@ from MedicalService s
 -- ✅ CON ON: el filtro ocurre durante el join, el LEFT JOIN sigue siendo LEFT JOIN
 from MedicalService s
     left join s.lines l
-        on l.invoice.issuedAt >= :from
-        and l.invoice.issuedAt <= :to
-```
+    on l.invoice.issuedAt is not null
+    and l.invoice.issuedAt >= :from and l.invoice.issuedAt <= :to
+    and (:status is null or l.invoice.status = :status)```
 
 - Aquí el motor primero evalúa si una línea cumple la condición para unirse. 
+- Todo el bloque ON ... AND ... AND ... es una única condición compuesta que el motor evalúa durante el LEFT JOIN, línea a línea
 - Si no cumple, o no existe, el servicio igualmente aparece en el resultado con l = NULL. 
+- La línea existe pero no cumple alguna condición (fecha fuera de rango, estado no coincide) → no se une, el servicio aparece con l = NULL.
 - El LEFT JOIN hace su trabajo.
 
 ## Evitar right join. Elige bien tu entidad raíz
