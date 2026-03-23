@@ -82,7 +82,8 @@ from MedicalService s
     left join s.lines l
     on l.invoice.issuedAt is not null
     and l.invoice.issuedAt >= :from and l.invoice.issuedAt <= :to
-    and (:status is null or l.invoice.status = :status)```
+    and (:status is null or l.invoice.status = :status)
+```
 
 - Aquí el motor primero evalúa si una línea cumple la condición para unirse. 
 - Todo el bloque ON ... AND ... AND ... es una única condición compuesta que el motor evalúa durante el LEFT JOIN, línea a línea
