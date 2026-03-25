@@ -8,3 +8,4 @@
 6. [Comparativa JPA vs SpringDataJPA](https://github.com/profeMelola/DWES-03-2025-26/blob/main/APOYO_TEORIA/Comparativa_JPA_vs_SpringDataJPA.md)
 7. [Generación de consultas Spring Data JPA por nombre de método](./SpringDataJPA-consultas.md)
 8. [JPQL - Join on](./JPQL-join-on.md)
+9. [Spring Boot / Logging](./logging.md)
