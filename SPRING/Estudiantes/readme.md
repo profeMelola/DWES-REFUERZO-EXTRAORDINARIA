@@ -2,6 +2,13 @@
 
 MVC de gestión de estudiantes del IES Alonso de Avellaneda.
 
+[Sigue las instrucciones del pdf](./REFUERZO-EstudiantesMVC.pdf)
+
+Utiliza los recursos proporcionados en la carpeta recursos.
+
+Tendrás que crear un proyecto desde cero.
+
+
 # SPRING API REST - EVALUACIONES
 
 ## Parte I
