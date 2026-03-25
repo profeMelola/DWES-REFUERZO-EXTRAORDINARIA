@@ -8,6 +8,10 @@ MVC de gestión de estudiantes del IES Alonso de Avellaneda.
 
 [Sigue las instrucciones del pdf](./REFUERZO-Api%20Rest%20Evaluaciones.pdf)
 
+Utiliza los recursos proporcionados en la carpeta recursos.
+
+Tendrás que crear un proyecto desde cero.
+
 ## Parte II: normalización de la BD y refactorización completa de la API REST
 
 En la versión actual de la práctica, la entidad Evaluacion contiene un campo codigo con valores como 1ev_1, 2ev_1, ordinaria_2, etc. 
