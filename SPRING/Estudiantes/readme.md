@@ -64,15 +64,23 @@ El alumnado deberá rediseñar el modelo para que:
 
 Propuesta de normalización. Opción recomendada:
 
-- Curso
-- TipoEvaluacion
+- Curso [id (PK), nombre, descripción]
+- TipoEvaluacion [id (PK), nombre]
     - Primera Evaluación
     - Segunda Evaluación
     - Tercera Evaluación
     - Ordinaria
     - Extraordinaria 
-- Evaluacion
-- Nota
+- Evaluacion [id (PK), curso_id (FK), tipo_evaluacion_id (FK)]
+- *Nuevo --> Alumno [nia (PK), nombre, apellidos]
+- Nota [id (PK), nia (FK)]
+
+
+Curso ──< Evaluacion >── TipoEvaluacion
+                │
+               Nota
+                │
+            Alumno (nia)
 
 ### Adaptación de datos iniciales
 
