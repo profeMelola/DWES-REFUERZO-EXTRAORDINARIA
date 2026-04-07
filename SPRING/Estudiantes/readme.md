@@ -168,3 +168,99 @@ GET /evaluaciones/{evaluacionId}/promedio
 PATCH /evaluaciones/{evaluacionId}/notas/{nia}
 
 ```
+
+--- 
+# Refuerzo JPA: Cascade y orphanRemoval en relaciones OneToMany. Relación entre curso y evaluaciones
+
+## 1. Definición de la relación
+
+```java
+@OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Evaluacion> evaluaciones;
+```
+
+Esto implica:
+- Un `Curso` tiene muchas `Evaluacion`
+- La FK está en `Evaluacion` (`curso_id`)
+- `Evaluacion` es el lado propietario
+
+---
+
+## 2. cascade = CascadeType.ALL
+
+Propaga operaciones del padre (`Curso`) al hijo (`Evaluacion`).
+
+Incluye:
+- PERSIST
+- MERGE
+- REMOVE
+- REFRESH
+- DETACH
+
+### Ejemplo: persistencia
+```java
+cursoRepository.save(curso);
+```
+Guarda también las evaluaciones asociadas.
+
+### Ejemplo: borrado
+```java
+cursoRepository.delete(curso);
+```
+Elimina el curso y todas sus evaluaciones.
+
+---
+
+## 3. orphanRemoval = true
+
+Elimina entidades hijas cuando dejan de pertenecer al padre.
+
+### Ejemplo:
+```java
+curso.getEvaluaciones().remove(ev);
+cursoRepository.save(curso);
+```
+
+Resultado:
+```sql
+DELETE FROM evaluacion WHERE id = ?
+```
+
+Sin orphanRemoval:
+```sql
+UPDATE evaluacion SET curso_id = NULL
+```
+
+---
+
+## 4. Diferencia clave
+
+| Concepto | Comportamiento |
+|----------|--------------|
+| cascade REMOVE | Borra hijos al borrar el padre |
+| orphanRemoval | Borra hijos al quitarlos de la colección |
+
+---
+
+## 5. Buenas prácticas
+
+### Mantener ambos lados sincronizados
+```java
+public void addEvaluacion(Evaluacion ev) {
+    evaluaciones.add(ev);
+    ev.setCurso(this);
+}
+
+public void removeEvaluacion(Evaluacion ev) {
+    evaluaciones.remove(ev);
+    ev.setCurso(null);
+}
+```
+
+---
+
+## 6. Conclusión
+
+- `cascade = ALL` → gestiona automáticamente operaciones CRUD
+- `orphanRemoval = true` → evita registros huérfanos
+- Juntos indican que `Curso` controla el ciclo de vida de `Evaluacion`
