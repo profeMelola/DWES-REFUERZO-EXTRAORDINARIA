@@ -1,5 +1,6 @@
 # Índice de contenidos
 
+0. [Interfaces funcionales](https://github.com/profeMelola/DWES-02-2025-26/blob/main/APOYO_TEORIA/Interfaces%20funcionales%20y%20lambdas.md)
 1. [Crear proyecto en Spring](./crear-proyecto-spring.md)
 2. [Page vs Slice en paginación Spring Data](./page-vs-slice-spring.data.md)
 3. [Transactional](./transactional.md)
