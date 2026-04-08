@@ -169,6 +169,26 @@ PATCH /evaluaciones/{evaluacionId}/notas/{nia}
 
 ```
 
+Detalle endpoint:
+
+```
+PATCH /evaluaciones/1/notas/12345
+{ "calificacion": 9 }
+
+→ 200 OK
+{
+  "id": 1,
+  "alumno": { "nia": "12345", "nombre": "Ana", "apellidos": "García López" },
+  "evaluacion": {
+    "id": 1,
+    "curso": { "id": 1, "nombre": "1DAW", "descripcion": "..." },
+    "tipoEvaluacion": { "id": 1, "nombre": "Primera Evaluación" }
+  },
+  "calificacion": 9
+}
+
+```
+
 --- 
 # Refuerzo JPA: Cascade y orphanRemoval en relaciones OneToMany. Relación entre curso y evaluaciones
 
