@@ -103,12 +103,14 @@ Curso ──< Evaluacion >── TipoEvaluacion
 
 ### Adaptación de datos iniciales
 
-Rehad el import.sql para cargar datos conforme al nuevo esquema.
+Rehad el data.sql para cargar datos conforme al nuevo esquema.
 
 - Insertar los cursos.
 - Insertar los tipos de evaluación.
 - Insertar las evaluaciones vinculando cada una a su curso y a su tipo.
 - Insertar las notas vinculándolas a la evaluación correspondiente.
+
+[Revisar configuración de BD](https://github.com/profeMelola/DWES-REFUERZO-EXTRAORDINARIA/blob/main/CONCEPTOS-TEORIA/data-import-sql.md)
 
 ```
 -- Tipos de evaluación (catálogo)
