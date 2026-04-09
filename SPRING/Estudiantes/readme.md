@@ -62,7 +62,7 @@ El alumnado deberá rediseñar el modelo para que:
 - No se repitan datos que puedan deducirse por relaciones.
 - La base de datos exprese las reglas del dominio mediante claves y restricciones.
 
-Propuesta de normalización. Opción recomendada:
+**Propuesta de normalización. Opción recomendada:**
 
 - Curso [id (PK), nombre, descripción]
 - TipoEvaluacion [id (PK), nombre]
@@ -82,6 +82,20 @@ Curso ──< Evaluacion >── TipoEvaluacion
                 │
             Alumno (nia)
 ```
+
+**Relación ManyToMany entre Curso y TipoEvaluacion -> Tabla intermedia Evaluacion**
+- Un Curso tiene más de un TipoEvaluacion.
+- Un TipoEvaluación se puede aplicar a más de un Curso.
+- Como la tabla intermedia tiene datos propios u otras entidades que apuntan a ella, en vez de usar @ManyToMany usamos @ManyToOne
+
+**Relación OneToMany/@ManyToOne entre Evaluacion y Nota:**
+- Una Evaluacion ( Curso + TipoEvaluacion ) puede tener más de una Nota.
+- Desde Evaluacion: una evaluación tiene muchas notas → @OneToMany
+- Desde Nota: una nota pertenece a una única evaluación → @ManyToOne
+
+**Relación OneToMany/@ManyToOne entre Alumno y Nota:**
+- Un Alumno puede tener muchas Nota (una por cada evaluación que curse) → @OneToMany
+- Una Nota pertenece a un único Alumno → @ManyToOne
 
 ### Adaptación de datos iniciales
 
