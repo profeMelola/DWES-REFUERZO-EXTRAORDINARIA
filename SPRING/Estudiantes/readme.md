@@ -98,6 +98,7 @@ Curso ──< Evaluacion >── TipoEvaluacion
 **Relación OneToMany/@ManyToOne entre Alumno y Nota:**
 - Un Alumno puede tener muchas Nota (una por cada evaluación que curse) → @OneToMany
 - Una Nota pertenece a un único Alumno → @ManyToOne
+- Un alumno no puede tener dos notas para la misma evaluación
 
 ---
 
