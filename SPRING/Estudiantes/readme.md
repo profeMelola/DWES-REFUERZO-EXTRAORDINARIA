@@ -62,6 +62,8 @@ El alumnado deberá rediseñar el modelo para que:
 - No se repitan datos que puedan deducirse por relaciones.
 - La base de datos exprese las reglas del dominio mediante claves y restricciones.
 
+---
+
 **Propuesta de normalización. Opción recomendada:**
 
 - Curso [id (PK), nombre, descripción]
@@ -96,6 +98,8 @@ Curso ──< Evaluacion >── TipoEvaluacion
 **Relación OneToMany/@ManyToOne entre Alumno y Nota:**
 - Un Alumno puede tener muchas Nota (una por cada evaluación que curse) → @OneToMany
 - Una Nota pertenece a un único Alumno → @ManyToOne
+
+---
 
 ### Adaptación de datos iniciales
 
@@ -158,6 +162,8 @@ INSERT INTO nota (nia, evaluacion_id, calificacion) VALUES ('12400', 7, 8);
 INSERT INTO nota (nia, evaluacion_id, calificacion) VALUES ('12401', 7, 7);
 INSERT INTO nota (nia, evaluacion_id, calificacion) VALUES ('12402', 7, 5);
 ``` 
+
+---
 
 ### Refactorización de la API REST
 
