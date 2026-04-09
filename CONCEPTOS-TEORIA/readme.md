@@ -10,3 +10,4 @@
 7. [Generación de consultas Spring Data JPA por nombre de método](./SpringDataJPA-consultas.md)
 8. [JPQL - Join on](./JPQL-join-on.md)
 9. [Spring Boot / Logging](./logging.md)
+10. [BD - data.sql vs import.sql en Spring Boot](./data-import-sql.md)
