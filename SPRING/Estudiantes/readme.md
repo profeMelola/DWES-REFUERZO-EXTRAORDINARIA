@@ -307,3 +307,85 @@ public void removeEvaluacion(Evaluacion ev) {
 - `cascade = ALL` → gestiona automáticamente operaciones CRUD
 - `orphanRemoval = true` → evita registros huérfanos
 - Juntos indican que `Curso` controla el ciclo de vida de `Evaluacion`
+
+---
+
+## ¿Cómo quedaría el schema.sql?
+
+<img width="743" height="467" alt="imagen" src="https://github.com/user-attachments/assets/26a53109-31b7-4b15-b458-80582fce7a35" />
+
+```
+-- =============================================================================
+-- SCHEMA.SQL - Equivalente al mapeo JPA de las entidades
+-- Base de datos H2 en memoria
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- TIPO_EVALUACION
+-- Catálogo cerrado de tipos: Primera Evaluación, Ordinaria, etc.
+-- -----------------------------------------------------------------------------
+CREATE TABLE tipo_evaluacion (
+    id      BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre  VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- -----------------------------------------------------------------------------
+-- CURSO
+-- -----------------------------------------------------------------------------
+CREATE TABLE curso (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre      VARCHAR(255) NOT NULL UNIQUE,
+    descripcion VARCHAR(255)
+);
+
+-- -----------------------------------------------------------------------------
+-- EVALUACION
+-- Tabla intermedia entre CURSO y TIPO_EVALUACION (Many-to-Many explícito)
+-- Un mismo curso no puede tener dos evaluaciones del mismo tipo
+-- -----------------------------------------------------------------------------
+CREATE TABLE evaluacion (
+    id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
+    curso_id            BIGINT NOT NULL,
+    tipo_evaluacion_id  BIGINT NOT NULL,
+
+    CONSTRAINT fk_evaluacion_curso
+        FOREIGN KEY (curso_id) REFERENCES curso(id),
+
+    CONSTRAINT fk_evaluacion_tipo
+        FOREIGN KEY (tipo_evaluacion_id) REFERENCES tipo_evaluacion(id),
+
+    CONSTRAINT uk_evaluacion_curso_tipo
+        UNIQUE (curso_id, tipo_evaluacion_id)
+);
+
+-- -----------------------------------------------------------------------------
+-- ALUMNO
+-- NIA como clave primaria natural (no generada)
+-- -----------------------------------------------------------------------------
+CREATE TABLE alumno (
+    nia         VARCHAR(255) PRIMARY KEY,
+    nombre      VARCHAR(255) NOT NULL,
+    apellidos   VARCHAR(255) NOT NULL
+);
+
+-- -----------------------------------------------------------------------------
+-- NOTA
+-- Un alumno solo puede tener una nota por evaluación
+-- -----------------------------------------------------------------------------
+CREATE TABLE nota (
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nia             VARCHAR(255) NOT NULL,
+    evaluacion_id   BIGINT NOT NULL,
+    calificacion    INT,
+
+    CONSTRAINT fk_nota_alumno
+        FOREIGN KEY (nia) REFERENCES alumno(nia),
+
+    CONSTRAINT fk_nota_evaluacion
+        FOREIGN KEY (evaluacion_id) REFERENCES evaluacion(id),
+
+    CONSTRAINT uk_nota_alumno_evaluacion
+        UNIQUE (nia, evaluacion_id)
+);
+```
+
