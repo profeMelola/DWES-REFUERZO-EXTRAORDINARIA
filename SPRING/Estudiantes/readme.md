@@ -110,7 +110,7 @@ Rehad el data.sql para cargar datos conforme al nuevo esquema.
 - Insertar las evaluaciones vinculando cada una a su curso y a su tipo.
 - Insertar las notas vinculándolas a la evaluación correspondiente.
 
-[Revisar configuración de BD](https://github.com/profeMelola/DWES-REFUERZO-EXTRAORDINARIA/blob/main/CONCEPTOS-TEORIA/data-import-sql.md)
+[Revisión configuración de BD](https://github.com/profeMelola/DWES-REFUERZO-EXTRAORDINARIA/blob/main/CONCEPTOS-TEORIA/data-import-sql.md)
 
 ```
 -- Tipos de evaluación (catálogo)
