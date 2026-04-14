@@ -1,4 +1,4 @@
-# Práctica — Películas y actores
+# Fase I: Práctica — Películas y actores
 
 ## Contexto
 
@@ -424,4 +424,6 @@ Verificaciones adicionales:
 
 ---
 
+# Fase II: Spring Security con autenticación externa
 
+[Supabase + JWT]
