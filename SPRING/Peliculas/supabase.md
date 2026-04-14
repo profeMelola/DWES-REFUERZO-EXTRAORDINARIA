@@ -1,9 +1,49 @@
 # Spring Security con autenticación externa — Supabase + JWT
 
+## Supabase
+
+Vamos a usar Supabase para delegar autenticación OAuth2/OIDC desde Spring Boot).
+
+Supabase tiene un plan gratuito. 
+
+Hay un plan “Free” de 0 €/mes. Está pensado para:
+- proyectos personales
+- MVPs
+- pruebas / aprendizaje
+
+Incluye:
+- Hasta 50.000 usuarios activos al mes (Auth)
+- Autenticación completa (JWT, OAuth, etc.)
+- 500 MB de base de datos (PostgreSQL)
+- 1 GB de almacenamiento de archivos
+- APIs automáticas ilimitadas
+- Funciones serverless (Edge Functions) con límites
+
+
 ## Arquitectura
 
 En lugar de gestionar usuarios y roles en la base de datos del proyecto, delegamos
 la autenticación a **Supabase**, que actúa como proveedor OAuth2/OIDC.
+
+OIDC (OpenID Connect) es un protocolo de autenticación basado en OAuth 2.0.
+
+- OAuth 2.0 → autorización:
+- OpenID Connect (OIDC) → autenticación
+
+OIDC introduce principalmente:
+
+- ID Token (JWT): Un token que contiene información del usuario:
+    - sub → identificador único
+    - email
+    - name
+    - iat / exp (tiempos)
+    - claims adicionales
+- UserInfo Endpoint: Permite pedir más datos del usuario al proveedor de identidad.
+- Standard de login federado. Permite:
+    - Login con Google / GitHub / Supabase / Azure AD
+    - Single Sign-On (SSO)
+    - Centralización de identidad
+
 
 El flujo es el siguiente:
 
@@ -21,6 +61,13 @@ Cliente                  Supabase                  Tu API (Spring Boot)
   │                          │                            │
   │◀─ 200 OK ────────────────────────────────────────────│
 ```
+
+- Tu app (Spring Boot) redirige al proveedor (Supabase)
+- Usuario hace login. Supabase devuelve:
+    - access_token (autorización)
+    - id_token (identidad)
+- Spring valida el id_token
+- Ya sabes quien es el usuario
 
 Tu API **nunca gestiona credenciales**. Solo valida el JWT que emite Supabase
 comprobando su firma contra el endpoint JWKS público del proyecto.
