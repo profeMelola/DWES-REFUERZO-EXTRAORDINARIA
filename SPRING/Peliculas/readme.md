@@ -426,4 +426,4 @@ Verificaciones adicionales:
 
 # Fase II: Spring Security con autenticación externa
 
-[Supabase + JWT]
+[Supabase + JWT](./supabase.md)
