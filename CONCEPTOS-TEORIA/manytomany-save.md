@@ -4,7 +4,7 @@
 
 Tenemos una relación `@ManyToMany` entre `User` y `Role`. 
 
-La tabla de unión `user_roles` está definida con `@JoinTable` en `AppUser`, lo que la convierte en el **lado propietario (owning side)** de la relación.
+La tabla de unión `user_roles` está definida con `@JoinTable` en `User`, lo que la convierte en el **lado propietario (owning side)** de la relación.
 
 
 ```java
