@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Tenemos una relación `@ManyToMany` entre `AppUser` y `Role`. 
+Tenemos una relación `@ManyToMany` entre `User` y `Role`. 
 
 La tabla de unión `user_roles` está definida con `@JoinTable` en `AppUser`, lo que la convierte en el **lado propietario (owning side)** de la relación.
 
