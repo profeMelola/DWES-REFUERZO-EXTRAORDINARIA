@@ -18,6 +18,9 @@ La relación tiene estas reglas de negocio:
 
 ## Modelo de base de datos
 
+<img width="593" height="625" alt="imagen" src="https://github.com/user-attachments/assets/ac4edb2b-aba3-441b-8036-aa7a10df928b" />
+
+
 **schema.sql:**
 
 ```sql
