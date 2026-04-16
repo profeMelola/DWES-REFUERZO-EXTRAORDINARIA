@@ -12,3 +12,4 @@
 9. [Spring Boot / Logging](./logging.md)
 10. [BD - data.sql vs import.sql en Spring Boot](./data-import-sql.md)
 11. [JPA - Save en relaciones ManyToMany](./manytomany-save.md)
+12. [JPA - Anotaciones en Entidades. Implicaciones en BD de memoria y física](./jpa-anotaciones-entidades.md)
