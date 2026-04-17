@@ -1,4 +1,4 @@
-# JOIN FETCH y el problema N+1 — Relación N:M Doctor ↔ Specialty
+# 1. JOIN FETCH y el problema N+1 — Relación N:M Doctor ↔ Specialty
 
 ## Contexto
 
@@ -249,7 +249,7 @@ La diferencia parece pequeña con 3 filas, pero con 50 doctores cada uno con 4 e
 --- 
 
 
-# Fetch por defecto en JPA — LAZY vs EAGER
+# 2. Fetch por defecto en JPA — LAZY vs EAGER
 
 ## `@OneToMany` es `LAZY` por defecto
 
@@ -317,7 +317,7 @@ List<DoctorSpecialty> findByDoctorIdWithSpecialty(@Param("doctorId") Long doctor
 
 --- 
 
-# Estrategias de borrado en JPA: CascadeType.ALL vs Validación por código
+# 3. Estrategias de borrado en JPA: CascadeType.ALL vs Validación por código
 
 ## El modelo de entidades
 
@@ -411,7 +411,7 @@ Si en algún momento la regla de negocio *sí* permite el borrado del doctor, ha
 
 ---
 
-## Regla práctica!!!!
+## Regla práctica para el borrado!!!!
 
 | Tipo de relación | Estrategia sugerida |
 |---|---|
