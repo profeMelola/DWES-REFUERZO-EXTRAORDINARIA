@@ -319,7 +319,93 @@ procesar(dividir(10, 0)); // Error: División por cero
 
 ---
 
-## 10. Resumen rápido de versiones
+## 10. Virtual Threads (Project Loom) — Java 21
+
+Es uno de los cambios más importantes en la historia de Java para programación concurrente.
+
+
+### El problema que resuelve
+
+En Java clásico, cada **thread** del programa corresponde a un **thread del sistema operativo** (OS thread). Eso es costoso: cada uno consume ~1MB de memoria de stack y el SO tiene un límite práctico de miles de threads.
+
+El modelo tradicional con thread pools obliga a escribir código asíncrono y reactivo (callbacks, CompletableFuture, Reactor...) que es difícil de leer y depurar.
+
+
+
+### ¿Qué son los Virtual Threads?
+
+Son threads **gestionados por la JVM**, no por el SO. Son extremadamente ligeros (~few KB) y puedes crear **millones** de ellos sin problema. La JVM los mapea internamente sobre un pequeño pool de OS threads llamados *carrier threads*.
+
+Cuando un virtual thread hace una operación bloqueante (leer de red, de disco, esperar en base de datos...), la JVM lo **aparca** automáticamente y libera el carrier thread para que otro virtual thread lo use. Cuando la operación termina, el virtual thread se reanuda.
+
+
+
+### Comparativa
+
+| | Threads clásicos | Virtual Threads |
+|---|---|---|
+| Gestionados por | Sistema operativo | JVM |
+| Coste de creación | ~1 MB de stack | ~few KB |
+| Cantidad práctica | Miles | **Millones** |
+| Bloqueo I/O | Bloquea un OS thread | Solo aparca el VT |
+| Modelo de código | Callbacks / reactivo | **Código secuencial normal** |
+
+
+
+### Código
+
+La API es prácticamente la misma que con threads normales, lo que es una de sus grandes virtudes:
+
+```java
+// Crear un virtual thread directamente
+Thread vt = Thread.ofVirtual().start(() -> {
+    System.out.println("Hola desde un virtual thread!");
+});
+
+// Con nombre
+Thread.ofVirtual()
+      .name("worker-1")
+      .start(() -> procesarPeticion());
+
+// Executor para servidores (un VT por tarea — el patrón recomendado)
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    for (int i = 0; i < 1_000_000; i++) {
+        executor.submit(() -> {
+            // simula llamada a base de datos (bloqueante)
+            Thread.sleep(Duration.ofMillis(100));
+            return "ok";
+        });
+    }
+} // espera a que terminen todos
+```
+
+Con threads clásicos, lanzar 1 millón de tareas así bloquearía o agotaría la memoria. Con virtual threads funciona perfectamente.
+
+---
+
+### El cambio de paradigma
+
+El modelo **reactivo** (WebFlux, RxJava...) nació para evitar que los threads se bloquearan esperando I/O. Con Virtual Threads ese problema desaparece, y puedes escribir código **bloqueante secuencial** —mucho más legible— con el mismo rendimiento:
+
+```java
+// Esto ahora es perfectamente válido y eficiente en un servidor
+String respuesta = httpClient.get("https://api.ejemplo.com/datos"); // bloqueante
+var resultado    = baseDatos.query("SELECT ...");                    // bloqueante
+cache.put("clave", resultado);
+```
+
+La JVM se encarga de que mientras ese thread espera, el OS thread subyacente esté haciendo trabajo útil.
+
+
+
+### Cuándo usarlos
+
+Son ideales para cargas de trabajo **I/O-bound** (servidores web, microservicios, acceso a BBDD). Para trabajo **CPU-bound** intensivo (cálculos numéricos, procesado de imágenes), los threads clásicos siguen siendo la herramienta correcta, ya que ahí no hay bloqueos que optimizar.
+
+Frameworks como **Spring Boot 3.2+** y **Quarkus** ya los activan de forma transparente con una sola línea de configuración.
+
+---
+##  Resumen rápido de versiones
 
 | Característica              | Versión estable |
 |-----------------------------|-----------------|
