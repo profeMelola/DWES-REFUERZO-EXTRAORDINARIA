@@ -22,14 +22,14 @@ public class Role {
     private String name;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<AppUser> users = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
-    public void addUser(AppUser user) {
+    public void addUser(User user) {
         users.add(user);
         user.getRoles().add(this);
     }
 
-    public void removeUser(AppUser user) {
+    public void removeUser(User user) {
         users.remove(user);
         user.getRoles().remove(this);
     }
@@ -89,7 +89,7 @@ Al finalizar la transacción, se hace un `flush` automático que persiste los ca
 @Transactional
 public RoleUserResponse addRoleToUser(RoleRequestId req, Long userId) {
 
-    AppUser user = userRepository.findById(userId)
+    User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
     for (Long roleId : req.rolesId()) {
@@ -119,16 +119,16 @@ En una relación `@ManyToMany`, Hibernate solo sincroniza la tabla de unión (`u
 
 | Entidad   | Lado             | Controla `user_roles` |
 |-----------|------------------|-----------------------|
-| `AppUser` | **Owning** (`@JoinTable`) | ✅ Sí |
+| `User` | **Owning** (`@JoinTable`) | ✅ Sí |
 | `Role`    | Inverse (`mappedBy`)      | ❌ No |
 
-Por eso lo que realmente importa es que la colección `roles` de `AppUser` esté actualizada. 
+Por eso lo que realmente importa es que la colección `roles` de `User` esté actualizada. 
 
 El método helper `addUser()` en `Role` hace exactamente eso:
 
 ```java
 // En Role.java
-public void addUser(AppUser user) {
+public void addUser(User user) {
     users.add(user);           // lado inverse → Hibernate lo ignora para la FK
     user.getRoles().add(this); // lado owning  → este ES el que persiste ✅
 }
@@ -142,7 +142,7 @@ public void addUser(AppUser user) {
 |-----------|---------------------|
 | Método con `@Transactional` | ❌ No |
 | Método **sin** `@Transactional` | ✅ Sí (la entidad no está en estado *managed*) |
-| Solo se actualiza el lado inverse (`Role.users`) sin tocar `AppUser.roles` | ✅ Sí (aunque hagas `save`, no persiste nada útil) |
+| Solo se actualiza el lado inverse (`Role.users`) sin tocar `User.roles` | ✅ Sí (aunque hagas `save`, no persiste nada útil) |
 
 ---
 
