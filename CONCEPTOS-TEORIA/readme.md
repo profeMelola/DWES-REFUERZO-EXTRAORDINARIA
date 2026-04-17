@@ -8,7 +8,7 @@
 5. [Estrategias LAZY-EAGER. Join Fetch. Strategias JPA](../SPRING/ordinaria/ampliaciones/join-fetch.md)
 6. [Comparativa JPA vs SpringDataJPA](https://github.com/profeMelola/DWES-03-2025-26/blob/main/APOYO_TEORIA/Comparativa_JPA_vs_SpringDataJPA.md)
 7. [Generación de consultas Spring Data JPA por nombre de método](./SpringDataJPA-consultas.md)
-8. [JPQL - Join on](./JPQL-join-on.md)
+8. [JPQL - No necesitas Join On](./JPQL-join-on.md)
 9. [Spring Boot / Logging](./logging.md)
 10. [BD - data.sql vs import.sql en Spring Boot](./data-import-sql.md)
 11. [JPA - Save en relaciones ManyToMany](./manytomany-save.md)
