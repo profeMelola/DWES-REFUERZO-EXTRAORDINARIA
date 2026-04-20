@@ -425,6 +425,15 @@ Verificaciones adicionales:
 | La tabla intermedia tiene atributos propios | Pruebas 1 y 7 |
 | `orphanRemoval` borra solo la fila intermedia | Prueba 8 |
 
+
+---
+## Demostración del problema N+1 con JOIN FETCH
+
+El endpoint ideal es obtener todas las películas con su casting completo. 
+
+Es el caso más didáctico porque con N películas, sin JOIN FETCH se disparan N+1 queries.
+
+
 ---
 
 # Fase II: Taquilla y report de películas más recaudadas
