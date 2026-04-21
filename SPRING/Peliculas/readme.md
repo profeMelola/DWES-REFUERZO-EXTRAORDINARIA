@@ -615,6 +615,19 @@ Movie (ya existe)
             └──▶ BoxOfficeEntry (nueva) ◀── Country (nueva)
 ```
 
+```
+Movie ──────────────────────────────────────────┐
+ (ya existe)                                     │ ManyToOne
+                                                 ▼
+Country ◀── ManyToOne ── Distributor ◀─ ManyToOne ── Release ──────────┐
+   ▲                                              │ OneToMany           │
+   │ ManyToOne                                    ▼                     │
+   └──────────────────────────────────── BoxOfficeEntry                │
+                                          (release_id, country_id)     │
+                                          gross, screens, periodStart  │
+                                          periodEnd                    │
+```
+
 ## Modelo de base de datos
 
 ```sql
