@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de borrado — Movie & Actor API</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #24292f;
+      background: #f6f8fa;
+      padding: 32px 16px;
+    }
+
+    .container { max-width: 1000px; margin: 0 auto; }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #24292f;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #57606a;
+      margin-bottom: 28px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      font-size: 12px;
+      font-family: inherit;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #d0d7de;
+      background: #fff;
+      color: #24292f;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    button:hover { background: #f3f4f6; }
+    button.active { background: #0969da; color: #fff; border-color: #0969da; font-weight: 500; }
+    button.reset { color: #57606a; }
+
+    .info-box {
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid #d0d7de;
+      background: #fff;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #57606a;
+      margin-bottom: 16px;
+      min-height: 44px;
+    }
+
+    .info-box strong { color: #24292f; }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: #57606a;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .tables-grid { grid-template-columns: 1fr; }
+    }
+
+    .tbl-card {
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .tbl-header {
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid #d0d7de;
+    }
+
+    .tbl-header.movies  { background: #ddf4ff; color: #0550ae; }
+    .tbl-header.actors  { background: #dafbe1; color: #116329; }
+    .tbl-header.cast    { background: #fff8c5; color: #7d4e00; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      padding: 5px 10px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: #57606a;
+      border-bottom: 1px solid #d0d7de;
+      background: #f6f8fa;
+    }
+
+    td { padding: 5px 10px; font-size: 12px; }
+
+    tr.row-neutral:hover { background: #f6f8fa; }
+
+    tr.deleted td {
+      text-decoration: line-through;
+      color: #a32d2d;
+    }
+    tr.deleted { background: #ffebe9 !important; }
+
+    tr.blocked td { color: #7d4e00; font-style: italic; }
+    tr.blocked { background: #fff8c5 !important; }
+
+    tr.safe td { color: #116329; }
+    tr.safe { background: #dafbe1 !important; }
+
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #57606a;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Simulador de borrado — Movie &amp; Actor API</h1>
+  <p class="subtitle">Selecciona una operación DELETE para ver qué filas se ven afectadas en cada tabla.</p>
+
+  <div class="btn-row" id="btn-row"></div>
+
+  <div class="info-box" id="info-box">Selecciona una acción para ver qué filas se ven afectadas.</div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#ffebe9"></div>Se borra
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#fff8c5"></div>Error FK / bloqueado
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#dafbe1"></div>Intacto
+    </div>
+  </div>
+
+  <div class="tables-grid">
+    <div class="tbl-card">
+      <div class="tbl-header movies">MOVIES</div>
+      <table>
+        <thead><tr><th>id</th><th>title</th><th>active</th></tr></thead>
+        <tbody id="t-movies"></tbody>
+      </table>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-header actors">ACTORS</div>
+      <table>
+        <thead><tr><th>id</th><th>stage_name</th><th>active</th></tr></thead>
+        <tbody id="t-actors"></tbody>
+      </table>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-header cast">MOVIE_CAST</div>
+      <table>
+        <thead><tr><th>movie_id</th><th>actor_id</th><th>character</th></tr></thead>
+        <tbody id="t-cast"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>Spring Boot · JPA · cascade / orphanRemoval</footer>
+</div>
+
+<script>
+  const movies = [
+    { id:1, title:'Inception',     active:true  },
+    { id:2, title:'Dark Knight',   active:true  },
+    { id:3, title:'Interstellar',  active:true  },
+    { id:6, title:'Batman Begins', active:false },
+  ];
+  const actors = [
+    { id:1, stage:'DiCaprio', active:true  },
+    { id:2, stage:'Caine',    active:true  },
+    { id:3, stage:'Nolan',    active:true  },
+    { id:6, stage:'Oldman',   active:false },
+  ];
+  const cast = [
+    { mid:1, aid:1, char:'Cobb'        },
+    { mid:1, aid:2, char:'Miles'       },
+    { mid:2, aid:3, char:'Batman'      },
+    { mid:2, aid:6, char:'Gordon'      },
+    { mid:3, aid:1, char:'Cooper'      },
+    { mid:3, aid:2, char:'Professor'   },
+    { mid:6, aid:3, char:'Bruce Wayne' },
+    { mid:6, aid:6, char:'Gordon'      },
+  ];
+
+  const scenarios = [
+    {
+      label: 'DELETE /movies/1',
+      info: '<strong>Borrar Inception (id=1):</strong> cascade ALL + orphanRemoval=true en Movie.cast → se borran las filas de MOVIE_CAST con movie_id=1. Los actores no se tocan.',
+      movieDel:[1], actorDel:[], actorBlocked:[],
+      castDel:(c)=>c.mid===1, castBlocked:()=>false,
+    },
+    {
+      label: 'DELETE /movies/6',
+      info: '<strong>Borrar Batman Begins (id=6):</strong> mismo mecanismo. cascade elimina los roles (mid=6). Actores intactos.',
+      movieDel:[6], actorDel:[], actorBlocked:[],
+      castDel:(c)=>c.mid===6, castBlocked:()=>false,
+    },
+    {
+      label: 'DELETE /actors/1 sin cascade',
+      info: '<strong>Borrar DiCaprio (id=1) SIN cascade:</strong> la BD lanza error de FK porque movie_cast tiene filas con actor_id=1. La operación se bloquea. Nada se borra.',
+      movieDel:[], actorDel:[], actorBlocked:[1],
+      castDel:()=>false, castBlocked:(c)=>c.aid===1,
+    },
+    {
+      label: 'DELETE /actors/1 con cascade',
+      info: '<strong>Borrar DiCaprio (id=1) CON cascade ALL en Actor.cast:</strong> se borran sus roles en MOVIE_CAST. Las películas no se borran.',
+      movieDel:[], actorDel:[1], actorBlocked:[],
+      castDel:(c)=>c.aid===1, castBlocked:()=>false,
+    },
+    {
+      label: 'DELETE /movies/1/cast/2',
+      info: '<strong>Eliminar el rol de Caine en Inception:</strong> orphanRemoval borra únicamente esa fila de MOVIE_CAST. Inception y Caine siguen existiendo.',
+      movieDel:[], actorDel:[], actorBlocked:[],
+      castDel:(c)=>c.mid===1&&c.aid===2, castBlocked:()=>false,
+    },
+    {
+      label: 'DELETE /actors/2 sin cascade',
+      info: '<strong>Borrar Caine (id=2) SIN cascade:</strong> tiene roles en Inception e Interstellar → FK bloquea la operación. Nada se borra.',
+      movieDel:[], actorDel:[], actorBlocked:[2],
+      castDel:()=>false, castBlocked:(c)=>c.aid===2,
+    },
+  ];
+
+  function render(s) {
+    document.getElementById('t-movies').innerHTML = movies.map(m => {
+      const cls = s ? (s.movieDel.includes(m.id) ? 'deleted' : 'safe') : 'row-neutral';
+      return `<tr class="${cls}"><td>${m.id}</td><td>${m.title}</td><td>${m.active}</td></tr>`;
+    }).join('');
+
+    document.getElementById('t-actors').innerHTML = actors.map(a => {
+      let cls = 'row-neutral';
+      if (s) {
+        if (s.actorDel.includes(a.id))      cls = 'deleted';
+        else if (s.actorBlocked.includes(a.id)) cls = 'blocked';
+        else                                     cls = 'safe';
+      }
+      return `<tr class="${cls}"><td>${a.id}</td><td>${a.stage}</td><td>${a.active}</td></tr>`;
+    }).join('');
+
+    document.getElementById('t-cast').innerHTML = cast.map(c => {
+      let cls = 'row-neutral';
+      if (s) {
+        if (s.castDel(c))     cls = 'deleted';
+        else if (s.castBlocked(c)) cls = 'blocked';
+        else                       cls = 'safe';
+      }
+      return `<tr class="${cls}"><td>${c.mid}</td><td>${c.aid}</td><td>${c.char}</td></tr>`;
+    }).join('');
+  }
+
+  const row = document.getElementById('btn-row');
+
+  scenarios.forEach(s => {
+    const btn = document.createElement('button');
+    btn.textContent = s.label;
+    btn.onclick = () => {
+      document.querySelectorAll('#btn-row button:not(.reset)').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('info-box').innerHTML = s.info;
+      render(s);
+    };
+    row.appendChild(btn);
+  });
+
+  const rst = document.createElement('button');
+  rst.className = 'reset';
+  rst.textContent = 'Resetear';
+  rst.onclick = () => {
+    document.querySelectorAll('#btn-row button:not(.reset)').forEach(b => b.classList.remove('active'));
+    document.getElementById('info-box').innerHTML = 'Selecciona una acción para ver qué filas se ven afectadas.';
+    render(null);
+  };
+  row.appendChild(rst);
+
+  render(null);
+</script>
+</body>
+</html>
