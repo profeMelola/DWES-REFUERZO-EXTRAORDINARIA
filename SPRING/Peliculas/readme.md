@@ -511,8 +511,10 @@ List<Movie> findAllWithCast();
 
 > **¿Por qué el `DISTINCT`?**  
 > El JOIN duplica filas de `Movie` en el resultado (una fila por cada actor). Sin `DISTINCT` obtendrías la misma película repetida tantas veces como actores tenga.
+> 
 > En el ejemplo de películas, partes de Movie y haces fetch de m.cast, que es una colección @OneToMany. Una película tiene muchos actores, así que el JOIN produce una fila por cada actor, repitiendo la película.
 > Con 3 actores en una película, esa película aparece 3 veces en el resultado. El DISTINCT le dice a Hibernate que colapse esas repeticiones en una sola entidad Movie.
+> 
 > En el ejemplo del médico, partes de DoctorSpecialty y haces fetch de ds.specialty, que es una relación @ManyToOne. Cada DoctorSpecialty apunta a una sola Specialty. El JOIN nunca puede multiplicar filas porque no hay colección que expandir. Cada DoctorSpecialty sigue siendo una fila en el resultado.
 
 El servicio queda así:
