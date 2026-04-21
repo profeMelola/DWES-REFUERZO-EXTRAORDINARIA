@@ -632,20 +632,45 @@ Movie (ya existe)
 ```
 
 
+### Movie (Película)
+- Una película tiene **muchos** estrenos → `Movie` **OneToMany** `Release`
 
-```
-Movie ──────────────────────────────────────────┐
- (ya existe)                                     │ ManyToOne
-                                                 ▼
-Country ◀── ManyToOne ── Distributor ◀─ ManyToOne ── Release ──────────┐
-   ▲                                              │ OneToMany           │
-   │ ManyToOne                                    ▼                     │
-   └──────────────────────────────────── BoxOfficeEntry                │
-                                          (release_id, country_id)     │
-                                          gross, screens, periodStart  │
-                                          periodEnd                    │
-```
+---
 
+### Country (País)
+- Un país tiene **muchas** distribuidoras → `Country` **OneToMany** `Distributor`
+- Un país tiene **muchos** registros de taquilla → `Country` **OneToMany** `BoxOfficeEntry`
+
+---
+
+### Distributor (Distribuidora)
+- Una distribuidora pertenece a **un solo** país → `Distributor` **ManyToOne** `Country`
+- Una distribuidora tiene **muchos** estrenos → `Distributor` **OneToMany** `Release`
+
+---
+
+### Release (Estreno)
+- Un estreno pertenece a **una sola** película → `Release` **ManyToOne** `Movie`
+- Un estreno pertenece a **una sola** distribuidora → `Release` **ManyToOne** `Distributor`
+- Un estreno tiene **muchos** registros de taquilla → `Release` **OneToMany** `BoxOfficeEntry`
+
+---
+
+### BoxOfficeEntry (Registro de taquilla)
+- Un registro de taquilla pertenece a **un solo** estreno → `BoxOfficeEntry` **ManyToOne** `Release`
+- Un registro de taquilla pertenece a **un solo** país → `BoxOfficeEntry` **ManyToOne** `Country`
+
+---
+
+### Resumen de quién tiene la FK en la base de datos
+
+| Entidad (tabla) | FK que contiene |
+|---|---|
+| `distributors` | `country_id` |
+| `releases` | `movie_id`, `distributor_id` |
+| `box_office_entries` | `release_id`, `country_id` |
+
+Regla: **la tabla que tiene la FK es siempre el lado `ManyToOne`** (el lado "muchos").
 
 
 ## Modelo de base de datos
