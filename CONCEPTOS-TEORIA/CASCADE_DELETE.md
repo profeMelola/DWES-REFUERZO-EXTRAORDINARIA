@@ -5,7 +5,7 @@ Efecto de cada operación DELETE sobre las tres tablas del modelo.
 > 🔴 Se borra · 🟠 Error FK / bloqueado · 🟢 Intacto
 
 
-[Ver simulador interactivo](https://tuusuario.github.io/tu-repo/simulador-borrado.html)
+[Ver simulador interactivo](https://tuusuario.github.io/DWES-REFUERZO-EXTRAORDINARIA/simulador-borrado.html)
 
 ---
 
