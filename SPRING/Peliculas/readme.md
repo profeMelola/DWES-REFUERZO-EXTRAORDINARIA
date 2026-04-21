@@ -605,6 +605,22 @@ Release       → estreno de una película por una distribuidora en un país y f
 BoxOfficeEntry → registro diario/semanal de recaudación de un estreno
 ```
 
+| Entidad | Nombre en español | Qué representa |
+|---|---|---|
+| `Movie` | **Película** | La película en sí (título, género, año) |
+| `Country` | **País** | Catálogo de países donde se distribuyen las películas |
+| `Distributor` | **Distribuidora** | La empresa que se encarga de estrenar la película en un país |
+| `Release` | **Estreno** | El acto de estrenar una película concreta por una distribuidora concreta |
+| `BoxOfficeEntry` | **Registro de taquilla** | La recaudación obtenida por un estreno durante un periodo de tiempo (semanal o diario) |
+
+**Ejemplo real:**
+
+- Inception (Movie) fue estrenada en USA (Country) por Warner Bros (Distributor) el 16 de julio de 2010 (Release).
+- Durante la primera semana recaudó 62.000.000 $ en 3.792 pantallas (BoxOfficeEntry).
+- Durante la segunda semana recaudó 36.000.000 $ en 3.792 pantallas (BoxOfficeEntry).
+
+
+
 ### Relación con el modelo existente
 
 ```
@@ -616,21 +632,6 @@ Movie (ya existe)
 ```
 
 
-```
-| Entidad | Nombre en español | Qué representa |
-|---|---|---|
-| `Movie` | **Película** | La película en sí (título, género, año) |
-| `Country` | **País** | Catálogo de países donde se distribuyen las películas |
-| `Distributor` | **Distribuidora** | La empresa que se encarga de estrenar la película en un país |
-| `Release` | **Estreno** | El acto de estrenar una película concreta por una distribuidora concreta |
-| `BoxOfficeEntry` | **Registro de taquilla** | La recaudación obtenida por un estreno durante un periodo de tiempo (semanal o diario) |
-```
-
-**Ejemplo real:**
-
-- Inception (Movie) fue estrenada en USA (Country) por Warner Bros (Distributor) el 16 de julio de 2010 (Release).
-- Durante la primera semana recaudó 62.000.000 $ en 3.792 pantallas (BoxOfficeEntry).
-- Durante la segunda semana recaudó 36.000.000 $ en 3.792 pantallas (BoxOfficeEntry).
 
 ```
 Movie ──────────────────────────────────────────┐
