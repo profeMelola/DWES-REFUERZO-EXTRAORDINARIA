@@ -4,6 +4,9 @@ Efecto de cada operación DELETE sobre las tres tablas del modelo.
 
 > 🔴 Se borra · 🟠 Error FK / bloqueado · 🟢 Intacto
 
+
+[Ver simulador interactivo](https://tuusuario.github.io/tu-repo/simulador-borrado.html)
+
 ---
 
 ## DELETE /movies/1 — Borrar película Inception
@@ -100,3 +103,5 @@ Caine tiene roles en Inception e Interstellar → FK bloquea la operación. Nada
 | Sin `cascade` en `Actor.cast` | FK bloquea si el actor tiene roles activos |
 | `cascade ALL` en `Actor.cast` | Borra los roles automáticamente al borrar el actor |
 | `orphanRemoval = true` | Borra solo la fila intermedia al eliminar un rol del Set |
+
+
