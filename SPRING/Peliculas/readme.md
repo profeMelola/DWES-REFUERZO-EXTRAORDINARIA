@@ -908,54 +908,129 @@ public class ReportController {
 ## Datos de prueba (`data.sql`)
 
 ```sql
--- COUNTRIES
-INSERT INTO countries (code, name, active) VALUES
-    ('USA', 'United States', true),
-    ('ESP', 'Spain',         true),
-    ('FRA', 'France',        true),
-    ('GBR', 'United Kingdom',true);
+-- =============================================================================
+-- DATA.SQL — Fase I + Fase II
+-- Orden de inserción respetando las FK:
+--   1. genres (si existe tabla separada) / movies
+--   2. countries
+--   3. distributors  (FK → countries)
+--   4. releases      (FK → movies, distributors)
+--   5. box_office_entries (FK → releases, countries)
+-- =============================================================================
 
--- DISTRIBUTORS
-INSERT INTO distributors (name, country_id, active) VALUES
-    ('Warner Bros USA',       1, true),
-    ('Warner Bros España',    2, true),
-    ('Universal France',      3, true),
-    ('Sony Pictures UK',      4, true);
 
--- RELEASES (usando movies del data.sql de Fase I)
--- Inception (1), The Dark Knight (2), Interstellar (3)
-INSERT INTO releases (movie_id, distributor_id, release_date, active) VALUES
-    (1, 1, '2010-07-16', true),   -- Inception - Warner USA
-    (1, 2, '2010-08-20', true),   -- Inception - Warner España
-    (2, 1, '2008-07-18', true),   -- The Dark Knight - Warner USA
-    (2, 4, '2008-08-01', true),   -- The Dark Knight - Sony UK
-    (3, 1, '2014-11-07', true),   -- Interstellar - Warner USA
-    (3, 3, '2014-11-12', true);   -- Interstellar - Universal France
+-- =============================================================================
+-- FASE I — Datos base de películas
+-- =============================================================================
 
--- BOX_OFFICE_ENTRIES
--- release_id | country_id | period_start | period_end | gross       | screens
+-- -----------------------------------------------------------------------------
+-- MOVIES
+-- Asumimos que Genre es un enum almacenado como String en la columna "genre"
+-- Ajusta los títulos/géneros según los hayas definido en Fase I
+-- -----------------------------------------------------------------------------
+INSERT INTO movies (id, title, genre, release_year, duration_minutes, active) VALUES
+    (1, 'Inception',        'SCI_FI', 2010, 148, true),
+    (2, 'The Dark Knight',  'ACTION', 2008, 152, true),
+    (3, 'Interstellar',     'SCI_FI', 2014, 169, true),
+    (4, 'The Prestige',     'DRAMA',  2006, 130, true),
+    (5, 'Dunkirk',          'ACTION', 2017, 106, true);
+
+
+-- =============================================================================
+-- FASE II — Taquilla
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- COUNTRIES — catálogo de países (ISO 3166-1 alpha-3)
+-- -----------------------------------------------------------------------------
+INSERT INTO countries (id, code, name, active) VALUES
+    (1, 'USA', 'United States',  true),
+    (2, 'ESP', 'Spain',          true),
+    (3, 'FRA', 'France',         true),
+    (4, 'GBR', 'United Kingdom', true);
+
+-- -----------------------------------------------------------------------------
+-- DISTRIBUTORS — FK → countries
+-- -----------------------------------------------------------------------------
+INSERT INTO distributors (id, name, country_id, active) VALUES
+    (1, 'Warner Bros USA',    1, true),
+    (2, 'Warner Bros España', 2, true),
+    (3, 'Universal France',   3, true),
+    (4, 'Sony Pictures UK',   4, true);
+
+-- -----------------------------------------------------------------------------
+-- RELEASES — FK → movies, distributors
+-- Restricción: una misma película NO puede tener dos estrenos
+--              con la misma distribuidora (uk_release_movie_dist)
+--
+-- release 1 → Inception        / Warner USA
+-- release 2 → Inception        / Warner España
+-- release 3 → The Dark Knight  / Warner USA
+-- release 4 → The Dark Knight  / Sony UK
+-- release 5 → Interstellar     / Warner USA
+-- release 6 → Interstellar     / Universal France
+-- release 7 → Dunkirk          / Warner USA  (Fase I extra)
+-- -----------------------------------------------------------------------------
+INSERT INTO releases (id, movie_id, distributor_id, release_date, active) VALUES
+    (1, 1, 1, '2010-07-16', true),   -- Inception        - Warner USA
+    (2, 1, 2, '2010-08-20', true),   -- Inception        - Warner España
+    (3, 2, 1, '2008-07-18', true),   -- The Dark Knight  - Warner USA
+    (4, 2, 4, '2008-08-01', true),   -- The Dark Knight  - Sony UK
+    (5, 3, 1, '2014-11-07', true),   -- Interstellar     - Warner USA
+    (6, 3, 3, '2014-11-12', true),   -- Interstellar     - Universal France
+    (7, 5, 1, '2017-07-21', true);   -- Dunkirk          - Warner USA
+
+-- -----------------------------------------------------------------------------
+-- BOX_OFFICE_ENTRIES — FK → releases, countries
+-- Cada fila = recaudación de un estreno en un país durante un periodo
+--
+-- Columnas: release_id | country_id | period_start | period_end | gross | screens
+-- -----------------------------------------------------------------------------
 INSERT INTO box_office_entries (release_id, country_id, period_start, period_end, gross, screens, active) VALUES
---  Inception USA (release 1)
-    (1, 1, '2010-07-16', '2010-07-22', 62000000.00, 3792, true),
-    (1, 1, '2010-07-23', '2010-07-29', 36000000.00, 3792, true),
-    (1, 1, '2010-07-30', '2010-08-05', 20000000.00, 3500, true),
---  Inception España (release 2)
-    (2, 2, '2010-08-20', '2010-08-26',  4500000.00,  350, true),
-    (2, 2, '2010-08-27', '2010-09-02',  2800000.00,  300, true),
---  The Dark Knight USA (release 3)
+
+    -- -------------------------------------------------------------------------
+    -- Inception USA (release 1) — total: 118.000.000 $
+    -- -------------------------------------------------------------------------
+    (1, 1, '2010-07-16', '2010-07-22',  62000000.00, 3792, true),
+    (1, 1, '2010-07-23', '2010-07-29',  36000000.00, 3792, true),
+    (1, 1, '2010-07-30', '2010-08-05',  20000000.00, 3500, true),
+
+    -- -------------------------------------------------------------------------
+    -- Inception España (release 2) — total: 7.300.000 €
+    -- -------------------------------------------------------------------------
+    (2, 2, '2010-08-20', '2010-08-26',   4500000.00,  350, true),
+    (2, 2, '2010-08-27', '2010-09-02',   2800000.00,  300, true),
+
+    -- -------------------------------------------------------------------------
+    -- The Dark Knight USA (release 3) — total: 276.000.000 $
+    -- -------------------------------------------------------------------------
     (3, 1, '2008-07-18', '2008-07-24', 158000000.00, 4366, true),
     (3, 1, '2008-07-25', '2008-07-31',  75000000.00, 4366, true),
     (3, 1, '2008-08-01', '2008-08-07',  43000000.00, 4200, true),
---  The Dark Knight UK (release 4)
+
+    -- -------------------------------------------------------------------------
+    -- The Dark Knight UK (release 4) — total: 19.000.000 £
+    -- -------------------------------------------------------------------------
     (4, 4, '2008-08-01', '2008-08-07',  12000000.00,  650, true),
     (4, 4, '2008-08-08', '2008-08-14',   7000000.00,  600, true),
---  Interstellar USA (release 5)
+
+    -- -------------------------------------------------------------------------
+    -- Interstellar USA (release 5) — total: 76.500.000 $
+    -- -------------------------------------------------------------------------
     (5, 1, '2014-11-07', '2014-11-13',  47500000.00, 3561, true),
     (5, 1, '2014-11-14', '2014-11-20',  29000000.00, 3500, true),
---  Interstellar France (release 6)
+
+    -- -------------------------------------------------------------------------
+    -- Interstellar France (release 6) — total: 8.300.000 €
+    -- -------------------------------------------------------------------------
     (6, 3, '2014-11-12', '2014-11-18',   5200000.00,  420, true),
-    (6, 3, '2014-11-19', '2014-11-25',   3100000.00,  380, true);
-```
+    (6, 3, '2014-11-19', '2014-11-25',   3100000.00,  380, true),
+
+    -- -------------------------------------------------------------------------
+    -- Dunkirk USA (release 7) — total: 56.000.000 $
+    -- -------------------------------------------------------------------------
+    (7, 1, '2017-07-21', '2017-07-27',  50400000.00, 3720, true),
+    (7, 1, '2017-07-28', '2017-08-03',   5600000.00, 3500, true);```
 
 ---
 
