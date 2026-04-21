@@ -429,9 +429,152 @@ Verificaciones adicionales:
 ---
 ## Demostración del problema N+1 con JOIN FETCH
 
-El endpoint ideal es obtener todas las películas con su casting completo. 
+Cuando tienes una entidad `Movie` con una relación `@OneToMany` hacia `Actor`, JPA carga las colecciones de forma **lazy por defecto**. Esto significa que los actores de cada película **no se cargan hasta que se accede a ellos**.
 
-Es el caso más didáctico porque con N películas, sin JOIN FETCH se disparan N+1 queries.
+Si pides 10 películas, Hibernate ejecuta:
+
+- **1 query** para las películas
+- **N queries** para los actores (una por cada película)
+
+**Con 100 películas:** 
+- 1 query para obtener las N películas
+- N queries más, una por cada película, para cargar su reparto
+
+
+[Más sobre Join Fetch](../ordinaria/ampliaciones/join-fetch.md)
+---
+
+### Las entidades
+
+```java
+@Entity
+public class Movie {
+    @Id @GeneratedValue
+    private Long id;
+    private String title;
+
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
+    private List<Actor> cast = new ArrayList<>();
+}
+
+@Entity
+public class Actor {
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "movie_id")
+    private Movie movie;
+}
+```
+
+---
+
+### El problema en acción
+
+```java
+// ❌ Provoca N+1
+public List<MovieDTO> getAllMoviesWithCast() {
+    return movieRepository.findAll()   // 1 query: SELECT * FROM movies
+        .stream()
+        .map(movie -> {
+            movie.getCast();           // N queries: SELECT * FROM actors WHERE movie_id = ?
+            return toDTO(movie);
+        })
+        .toList();
+}
+```
+
+En los logs de Hibernate verás algo así:
+
+```sql
+SELECT * FROM movies
+
+SELECT * FROM actors WHERE movie_id = 1
+SELECT * FROM actors WHERE movie_id = 2
+SELECT * FROM actors WHERE movie_id = 3
+...
+SELECT * FROM actors WHERE movie_id = N
+```
+
+---
+
+### La solución: JOIN FETCH
+
+Se añade `JOIN FETCH` en la query JPQL del repositorio para que Hibernate traiga todo en **una sola query**:
+
+```java
+@Query("SELECT DISTINCT m FROM Movie m JOIN FETCH m.cast")
+List<Movie> findAllWithCast();
+```
+
+> **¿Por qué el `DISTINCT`?**  
+> El JOIN duplica filas de `Movie` en el resultado (una fila por cada actor). Sin `DISTINCT` obtendrías la misma película repetida tantas veces como actores tenga.
+
+El servicio queda así:
+
+```java
+// ✅ Una sola query
+public List<MovieDTO> getAllMoviesWithCast() {
+    return movieRepository.findAllWithCast()
+        .stream()
+        .map(this::toDTO)
+        .toList();
+}
+```
+
+Ahora en los logs solo aparece **una query**:
+
+```sql
+SELECT DISTINCT m.*, a.*
+FROM movies m
+INNER JOIN actors a ON a.movie_id = m.id
+```
+
+---
+
+### Cómo verificarlo: logs de Hibernate
+
+En `application.properties`:
+
+```properties
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.SQL=DEBUG
+```
+
+Con estas propiedades activas puedes contar las queries en consola y confirmar si el problema existe o está resuelto.
+
+---
+
+### AMPLIACIÓN!!!!  obtener todas las películas con su casting completo
+
+![alt text](image-1.png)
+
+Implementa el endpoint para obtener el casting de todas las películas.
+
+Usa los siguientes dto:
+
+```
+// Actor dentro del cast
+public record ActorCastDto(
+        Long actorId,
+        String stageName,
+        String characterName,
+        short screenMinutes
+) {}
+
+// Película con su lista de actores
+public record MovieWithCastDto(
+        Long id,
+        String title,
+        int releaseYear,
+        String genre,
+        boolean active,
+        List<ActorCastDto> cast
+) {}
+```
 
 
 ---
