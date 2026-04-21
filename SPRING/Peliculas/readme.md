@@ -929,7 +929,7 @@ public class ReportController {
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- MOVIES
+-- MOVIES ??????????????? de dónde sale duration_minutes????
 -- Asumimos que Genre es un enum almacenado como String en la columna "genre"
 -- Ajusta los títulos/géneros según los hayas definido en Fase I
 -- -----------------------------------------------------------------------------
@@ -1035,7 +1035,8 @@ INSERT INTO box_office_entries (release_id, country_id, period_start, period_end
     -- Dunkirk USA (release 7) — total: 56.000.000 $
     -- -------------------------------------------------------------------------
     (7, 1, '2017-07-21', '2017-07-27',  50400000.00, 3720, true),
-    (7, 1, '2017-07-28', '2017-08-03',   5600000.00, 3500, true);```
+    (7, 1, '2017-07-28', '2017-08-03',   5600000.00, 3500, true);
+```
 
 ---
 
