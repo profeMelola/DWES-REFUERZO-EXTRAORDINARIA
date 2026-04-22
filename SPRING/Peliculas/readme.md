@@ -440,6 +440,7 @@ Si pides 10 películas, Hibernate ejecuta:
 
 
 [Más sobre Join Fetch](../ordinaria/ampliaciones/join-fetch.md)
+
 ---
 
 La relación entre `Movie` y `Actor` no es directa. Existe una **tabla intermedia** `MovieCast` con atributos propios: el nombre del personaje, los minutos en pantalla, etc.
