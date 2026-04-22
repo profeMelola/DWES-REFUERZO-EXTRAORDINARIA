@@ -427,24 +427,27 @@ Verificaciones adicionales:
 
 
 ---
-## Demostración del problema N+1 con JOIN FETCH
+## Demostración del problema N+1 con JOIN FETCH. Obtener todas las películas con su casting completo
 
-Cuando tienes una entidad `Movie` con una relación `@OneToMany` hacia `Actor`, JPA carga las colecciones de forma **lazy por defecto**. Esto significa que los actores de cada película **no se cargan hasta que se accede a ellos**.
+Cuando tienes una entidad `Movie` con una relación `@OneToMany` hacia `MovieCast`, JPA carga las colecciones de forma **lazy por defecto**. Esto significa que el casting de cada película **no se carga hasta que se accede a él**.
 
 Si pides 10 películas, Hibernate ejecuta:
 
 - **1 query** para las películas
-- **N queries** para los actores (una por cada película)
+- **N queries** para el casting, una por cada película
 
-**Con 100 películas:** 
-- 1 query para obtener las N películas
-- N queries más, una por cada película, para cargar su reparto
+**Con 100 películas:** 1 query para obtenerlas todas + 100 queries más para cargar el casting de cada una.
 
 
 [Más sobre Join Fetch](../ordinaria/ampliaciones/join-fetch.md)
 ---
 
-### Las entidades
+La relación entre `Movie` y `Actor` no es directa. Existe una **tabla intermedia** `MovieCast` con atributos propios: el nombre del personaje, los minutos en pantalla, etc.
+
+```
+Movie  ──────@OneToMany──────►  MovieCast  ◄──────@ManyToOne──────  Actor
+              (movieCast)         (movie_id, actor_id)
+```
 
 ```java
 @Entity
@@ -452,35 +455,55 @@ public class Movie {
     @Id @GeneratedValue
     private Long id;
     private String title;
+    private int releaseYear;
+    private String genre;
+    private boolean active;
 
-    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
-    private List<Actor> cast = new ArrayList<>();
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MovieCast> movieCast = new HashSet<>();
 }
+```
 
+```java
+@Entity
+public class MovieCast {
+    @EmbeddedId
+    private MovieCastId id;          // PK compuesta (movie_id, actor_id)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("movieId")
+    private Movie movie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("actorId")
+    private Actor actor;
+
+    private String characterName;
+    private short screenMinutes;
+}
+```
+
+```java
 @Entity
 public class Actor {
     @Id @GeneratedValue
     private Long id;
-    private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "movie_id")
-    private Movie movie;
+    private String stageName;
 }
 ```
 
 ---
 
-### El problema en acción
+## El problema en acción
 
 ```java
 // ❌ Provoca N+1
-public List<MovieDTO> getAllMoviesWithCast() {
-    return movieRepository.findAll()   // 1 query: SELECT * FROM movies
+public List<MovieWithCastDto> getAllMoviesWithCast() {
+    return movieRepository.findAll()        // 1 query: SELECT * FROM movies
         .stream()
         .map(movie -> {
-            movie.getCast();           // N queries: SELECT * FROM actors WHERE movie_id = ?
-            return toDTO(movie);
+            movie.getMovieCast();           // N queries: SELECT * FROM movie_cast WHERE movie_id = ?
+            return toDto(movie);
         })
         .toList();
 }
@@ -491,76 +514,70 @@ En los logs de Hibernate verás algo así:
 ```sql
 SELECT * FROM movies
 
-SELECT * FROM actors WHERE movie_id = 1
-SELECT * FROM actors WHERE movie_id = 2
-SELECT * FROM actors WHERE movie_id = 3
+SELECT * FROM movie_cast WHERE movie_id = 1
+SELECT * FROM movie_cast WHERE movie_id = 2
+SELECT * FROM movie_cast WHERE movie_id = 3
 ...
-SELECT * FROM actors WHERE movie_id = N
+SELECT * FROM movie_cast WHERE movie_id = N
 ```
 
 ---
 
-### La solución: JOIN FETCH
+## La solución: JOIN FETCH
 
 Se añade `JOIN FETCH` en la query JPQL del repositorio para que Hibernate traiga todo en **una sola query**:
 
 ```java
-@Query("SELECT DISTINCT m FROM Movie m JOIN FETCH m.cast")
+@Query("SELECT DISTINCT m FROM Movie m 
+    JOIN FETCH m.movieCast mc 
+    JOIN FETCH mc.actor")
 List<Movie> findAllWithCast();
 ```
 
 > **¿Por qué el `DISTINCT`?**  
-> El JOIN duplica filas de `Movie` en el resultado (una fila por cada actor). Sin `DISTINCT` obtendrías la misma película repetida tantas veces como actores tenga.
+> `m.movieCast` es una colección `@OneToMany`. 
+> El JOIN produce una fila por cada entrada en `movie_cast`, repitiendo la película. 
+> Con 5 actores en una película, esa película aparece 5 veces en el resultado. 
+> El `DISTINCT` le dice a Hibernate que colapse esas repeticiones en una sola entidad `Movie`.
 > 
-> En el ejemplo de películas, partes de Movie y haces fetch de m.cast, que es una colección @OneToMany. Una película tiene muchos actores, así que el JOIN produce una fila por cada actor, repitiendo la película.
-> Con 3 actores en una película, esa película aparece 3 veces en el resultado. El DISTINCT le dice a Hibernate que colapse esas repeticiones en una sola entidad Movie.
-> 
+
 > En el ejemplo del médico, partes de DoctorSpecialty y haces fetch de ds.specialty, que es una relación @ManyToOne. Cada DoctorSpecialty apunta a una sola Specialty. El JOIN nunca puede multiplicar filas porque no hay colección que expandir. Cada DoctorSpecialty sigue siendo una fila en el resultado.
+
+> **¿Por qué hay dos `JOIN FETCH`?**  
+> Necesitamos los datos del actor (`stageName`) para construir el DTO. Si solo hacemos fetch de `movieCast` pero no de `actor`, Hibernate lanzaría una query lazy por cada `mc.getActor()` — un segundo N+1 anidado.
+
 
 El servicio queda así:
 
 ```java
 // ✅ Una sola query
-public List<MovieDTO> getAllMoviesWithCast() {
+public List<MovieWithCastDto> getAllMoviesWithCast() {
     return movieRepository.findAllWithCast()
         .stream()
-        .map(this::toDTO)
+        .map(this::toDto)
         .toList();
 }
+
+private MovieWithCastDto toDto(Movie m) {
+    List<ActorCastDto> cast = m.getMovieCast().stream()
+        .map(mc -> new ActorCastDto(
+            mc.getActor().getId(),
+            mc.getActor().getStageName(),
+            mc.getCharacterName(),
+            mc.getScreenMinutes()
+        ))
+        .toList();
+
+    return new MovieWithCastDto(
+        m.getId(),
+        m.getTitle(),
+        m.getReleaseYear(),
+        m.getGenre(),
+        m.isActive(),
+        cast
+    );
+}
 ```
-
-Ahora en los logs solo aparece **una query**:
-
-```sql
-SELECT DISTINCT m.*, a.*
-FROM movies m
-INNER JOIN actors a ON a.movie_id = m.id
-```
-
----
-
-### Cómo verificarlo: logs de Hibernate
-
-En `application.properties`:
-
-```properties
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-logging.level.org.hibernate.SQL=DEBUG
-```
-
-Con estas propiedades activas puedes contar las queries en consola y confirmar si el problema existe o está resuelto.
-
----
-
-### AMPLIACIÓN!!!!  obtener todas las películas con su casting completo
-
-![alt text](image-1.png)
-
-Implementa el endpoint para obtener el casting de todas las películas.
-
-Usa los siguientes dto:
-
 ```
 // Actor dentro del cast
 public record ActorCastDto(
@@ -582,7 +599,31 @@ public record MovieWithCastDto(
 ```
 
 
+Ahora en los logs solo aparece **una query**:
+
+```sql
+SELECT DISTINCT m.*, mc.*, a.*
+FROM movies m
+INNER JOIN movie_cast mc ON mc.movie_id = m.id
+INNER JOIN actors a ON a.id = mc.actor_id
+```
+
 ---
+
+## Cómo verificarlo: logs de Hibernate
+
+En `application.properties`:
+
+```properties
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.SQL=DEBUG
+```
+
+Con estas propiedades activas puedes contar las queries en consola y confirmar si el problema existe o está resuelto.
+
+---
+
 
 # Fase II: Taquilla y report de películas más recaudadas
 
