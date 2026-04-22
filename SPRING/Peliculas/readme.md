@@ -975,12 +975,12 @@ public class ReportController {
 -- Asumimos que Genre es un enum almacenado como String en la columna "genre"
 -- Ajusta los títulos/géneros según los hayas definido en Fase I
 -- -----------------------------------------------------------------------------
-INSERT INTO movies (id, title, genre, release_year, duration_minutes, active) VALUES
-    (1, 'Inception',        'SCI_FI', 2010, 148, true),
-    (2, 'The Dark Knight',  'ACTION', 2008, 152, true),
-    (3, 'Interstellar',     'SCI_FI', 2014, 169, true),
-    (4, 'The Prestige',     'DRAMA',  2006, 130, true),
-    (5, 'Dunkirk',          'ACTION', 2017, 106, true);
+-- INSERT INTO movies (id, title, genre, release_year, duration_minutes, active) VALUES
+--    (1, 'Inception',        'SCI_FI', 2010, 148, true),
+--    (2, 'The Dark Knight',  'ACTION', 2008, 152, true),
+--    (3, 'Interstellar',     'SCI_FI', 2014, 169, true),
+--    (4, 'The Prestige',     'DRAMA',  2006, 130, true),
+--    (5, 'Dunkirk',          'ACTION', 2017, 106, true);
 
 
 -- =============================================================================
