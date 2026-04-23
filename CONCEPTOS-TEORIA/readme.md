@@ -17,4 +17,4 @@
 14. [Java Moderno](./java-moderno.md)
 15. [Http Location Header](./http-location-header.md)
 16. [Ver simulador interactivo borrado en cascada](./CASCADE_DELETE.md)
-16. [JPQL - report interactivo](https://profeMelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/jpql-report-explainer.html)()
+16. [JPQL - report interactivo](https://profeMelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/jpql-report-explainer.html)
