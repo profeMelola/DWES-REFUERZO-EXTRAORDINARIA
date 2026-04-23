@@ -923,6 +923,9 @@ List<TopGrossingMovieReport> topGrossingMovies(
 > La query cruza 4 tablas: `box_office_entries` → `releases` → `movies` y `distributors`.
 > Los filtros son todos opcionales gracias al patrón `:param IS NULL OR`.
 
+[Visualizador online explicativo del informe](https://profemelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/jpql-report-explainer.html)
+
+
 ### Endpoint
 
 ```http
