@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Query JPQL — topGrossingMovies</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  /* Nav */
+  .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .step-label { font-size: 14px; font-weight: 500; flex: 1; min-width: 260px; }
+  .btn { cursor: pointer; padding: 6px 18px; border-radius: 6px; border: 1px solid #ccc;
+         background: #fff; font-size: 13px; color: #333; transition: background .15s; }
+  .btn:hover { background: #f0ede8; }
+  .btn:disabled { opacity: .35; cursor: default; }
+
+  /* Dots */
+  .dots { display: flex; gap: 6px; margin-bottom: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #d0cfc8; transition: background .2s; }
+  .dot.active { background: #4a6fa5; }
+
+  /* Desc */
+  .desc { font-size: 13px; color: #555; margin-bottom: 14px; min-height: 36px; line-height: 1.6; }
+
+  /* Content */
+  #content { margin-bottom: 16px; }
+
+  /* JPQL block */
+  .jpql-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .code-block { font-family: 'Courier New', monospace; font-size: 12px; background: #f0ede8;
+                border-radius: 6px; padding: 10px 14px; line-height: 1.8; color: #1a1a18;
+                border: 1px solid #ddd; white-space: pre; overflow-x: auto; }
+
+  /* Tables */
+  .tbl-wrap { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+  .tbl-head { padding: 7px 12px; font-size: 12px; font-weight: 500; background: #f4f2ee;
+              border-bottom: 1px solid #ddd; }
+  table { border-collapse: collapse; width: 100%; }
+  th { font-weight: 500; font-size: 11px; color: #777; text-transform: uppercase;
+       letter-spacing: .04em; padding: 5px 12px; background: #faf9f6; border-bottom: 1px solid #eee; }
+  td { padding: 5px 12px; font-size: 12px; }
+  tr:not(:last-child) td { border-bottom: 1px solid #eee; }
+  .row-hi { background: #eaf6f1; }
+  .row-result { background: #eef6ea; }
+
+  /* Pills */
+  .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+  .or { background: #FAEEDA; color: #633806; }
+  .bl { background: #E6F1FB; color: #0C447C; }
+  .te { background: #E1F5EE; color: #085041; }
+  .pu { background: #EEEDFE; color: #26215C; }
+  .gy { background: #F1EFE8; color: #444; }
+  .ac { background: #ebf7e6; color: #27500A; }
+
+  /* Grid helpers */
+  .g3 { display: grid; grid-template-columns: 1fr 36px 1fr 36px 1fr; gap: 0; align-items: start; }
+  .g3c { display: flex; align-items: center; justify-content: center; padding-top: 48px; flex-direction: column; }
+  .arr { font-size: 20px; color: #999; }
+  .arr-lbl { font-size: 10px; color: #aaa; }
+
+  .col3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .card { padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
+  .card-lbl { font-size: 11px; color: #888; margin-bottom: 6px; }
+
+  .filter-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+                border-radius: 8px; border: 1px solid #ddd; margin-bottom: 8px; }
+  .filter-name { min-width: 72px; }
+
+  .proj-grid { display: grid; grid-template-columns: 1fr 24px 1fr; gap: 0; align-items: start; }
+  .proj-arg { padding: 5px 10px; border-radius: 6px; font-family: monospace; font-size: 11px;
+              margin-bottom: 4px; }
+  .proj-field { padding: 5px 10px; border-radius: 6px; font-size: 11px; border: 1px solid #ddd;
+                margin-bottom: 4px; }
+  .proj-arr { font-size: 15px; color: #aaa; line-height: 2.15; text-align: center; }
+  .note { font-size: 11px; color: #888; margin-top: 8px; }
+  mono { font-family: monospace; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Query JPQL — <mono>topGrossingMovies</mono></h1>
+<p class="subtitle">Explicación paso a paso de cómo se construye el informe de películas más recaudadas</p>
+
+<div class="nav">
+  <span class="step-label" id="slabel"></span>
+  <div>
+    <button class="btn" id="bprev" onclick="go(-1)">← Anterior</button>
+    &nbsp;
+    <button class="btn" id="bnext" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<div class="dots" id="dots"></div>
+<p class="desc" id="sdesc"></p>
+<div id="content"></div>
+<div class="jpql-label">Fragmento activo de la query:</div>
+<div class="code-block" id="sjpql"></div>
+
+<script>
+function p(t,c){return'<span class="pill '+c+'">'+t+'</span>';}
+function mono(t){return'<span style="font-family:monospace;font-size:11px;">'+t+'</span>';}
+
+var cur=0;
+
+var S=[
+/* ── PASO 1 ── */
+{
+label:"Paso 1 — Tablas implicadas y JOINs",
+desc:"La query navega por 3 entidades JPA: BoxOfficeEntry → Release → Movie. Hibernate traduce los JOINs usando las relaciones @ManyToOne definidas en las entidades, no columnas SQL directas.",
+jpql:"FROM BoxOfficeEntry boe\n    JOIN boe.release r\n    JOIN r.movie m",
+html:function(){
+return '<div class="g3">'+
+
+'<div class="tbl-wrap">'+
+'<div class="tbl-head">'+p('BoxOfficeEntry','or')+' <span style="color:#999;font-size:11px;">boe</span></div>'+
+'<table><thead><tr><th>Campo</th><th>Tipo</th></tr></thead><tbody>'+
+'<tr class="row-hi"><td><b>release_id</b></td><td>'+p('FK → Release','bl')+'</td></tr>'+
+'<tr><td>country_id</td><td>'+p('FK','gy')+'</td></tr>'+
+'<tr><td>period_start</td><td>DATE</td></tr>'+
+'<tr><td>period_end</td><td>DATE</td></tr>'+
+'<tr><td>gross</td><td>DECIMAL</td></tr>'+
+'<tr><td>screens</td><td>INT</td></tr>'+
+'<tr><td>active</td><td>BOOL</td></tr>'+
+'</tbody></table></div>'+
+
+'<div class="g3c"><span class="arr">→</span><span class="arr-lbl">JOIN</span></div>'+
+
+'<div class="tbl-wrap">'+
+'<div class="tbl-head">'+p('Release','bl')+' <span style="color:#999;font-size:11px;">r</span></div>'+
+'<table><thead><tr><th>Campo</th><th>Tipo</th></tr></thead><tbody>'+
+'<tr><td>id</td><td>'+p('PK','bl')+'</td></tr>'+
+'<tr class="row-hi"><td><b>movie_id</b></td><td>'+p('FK → Movie','te')+'</td></tr>'+
+'<tr><td>distributor_id</td><td>'+p('FK','gy')+'</td></tr>'+
+'<tr><td>release_date</td><td>DATE</td></tr>'+
+'<tr><td>active</td><td>BOOL</td></tr>'+
+'</tbody></table></div>'+
+
+'<div class="g3c"><span class="arr">→</span><span class="arr-lbl">JOIN</span></div>'+
+
+'<div class="tbl-wrap">'+
+'<div class="tbl-head">'+p('Movie','te')+' <span style="color:#999;font-size:11px;">m</span></div>'+
+'<table><thead><tr><th>Campo</th><th>Tipo</th></tr></thead><tbody>'+
+'<tr><td>id</td><td>'+p('PK','te')+'</td></tr>'+
+'<tr><td>title</td><td>VARCHAR</td></tr>'+
+'<tr><td>genre</td><td>ENUM</td></tr>'+
+'<tr><td>release_year</td><td>INT</td></tr>'+
+'<tr><td>active</td><td>BOOL</td></tr>'+
+'</tbody></table></div>'+
+
+'</div>'+
+'<p class="note">boe.release (campo @ManyToOne en BoxOfficeEntry) → r.movie (campo @ManyToOne en Release)</p>';
+}
+},
+
+/* ── PASO 2 ── */
+{
+label:"Paso 2 — Filtros WHERE opcionales",
+desc:"Los tres filtros son opcionales. Si el parámetro llega null desde el controlador, el patrón ':param IS NULL OR ...' hace que la condición sea siempre verdadera, ignorando ese filtro.",
+jpql:"WHERE boe.active = true\n  AND r.active   = true\n  AND m.active   = true\n  AND (:genre IS NULL OR CAST(m.genre AS string) = :genre)\n  AND (:from  IS NULL OR boe.periodStart >= :from)\n  AND (:to    IS NULL OR boe.periodEnd   <= :to)",
+html:function(){
+var rows=[
+{name:':genre',field:'m.genre',op:'=',ex:'SCI_FI',c:'te',tbl:'Movie'},
+{name:':from',field:'boe.periodStart',op:'>=',ex:'2010-01-01',c:'or',tbl:'BoxOfficeEntry'},
+{name:':to',field:'boe.periodEnd',op:'<=',ex:'2015-12-31',c:'or',tbl:'BoxOfficeEntry'},
+];
+return rows.map(function(r){
+return '<div class="filter-row">'+
+'<div class="filter-name">'+p(r.name,'pu')+'</div>'+
+'<div style="font-size:12px;color:#555;flex:1;">'+
+'Si <b>'+r.name+' IS NULL</b> → filtro ignorado<br>'+
+'Si no → '+mono(r.field+' '+r.op+' '+r.name)+' sobre '+p(r.tbl,r.c)+
+'</div>'+
+'<div style="font-size:11px;color:#999;">ej: '+mono(r.ex)+'</div>'+
+'</div>';
+}).join('')+
+'<div class="filter-row" style="background:#faf9f6;">'+
+'<span style="font-size:12px;color:#555;">+ <b>active = true</b> en boe, r y m para excluir registros eliminados lógicamente (soft delete)</span>'+
+'</div>';
+}
+},
+
+/* ── PASO 3 ── */
+{
+label:"Paso 3 — GROUP BY y agregaciones",
+desc:"Se agrupa por película (m.id, m.title, m.genre) para acumular los datos de todos sus estrenos. Sobre ese grupo se calculan COUNT, SUM de pantallas y SUM de recaudación.",
+jpql:"GROUP BY m.id, m.title, m.genre\nORDER BY SUM(boe.gross) DESC",
+html:function(){
+return '<div class="col3">'+
+'<div class="card">'+
+'<div class="card-lbl">GROUP BY</div>'+
+'<div style="font-family:monospace;font-size:12px;line-height:2.2;">m.id<br>m.title<br>m.genre</div>'+
+'<p style="font-size:11px;color:#888;margin-top:6px;">Una fila por película</p>'+
+'</div>'+
+'<div class="card">'+
+'<div class="card-lbl">Agregaciones calculadas</div>'+
+p('COUNT(boe.id)','or')+'<br><span style="font-size:11px;color:#888;">nº registros taquilla</span><br><br>'+
+p('SUM(boe.screens)','or')+'<br><span style="font-size:11px;color:#888;">pantallas acumuladas</span><br><br>'+
+p('SUM(boe.gross)','or')+'<br><span style="font-size:11px;color:#888;">recaudación total</span>'+
+'</div>'+
+'<div class="card">'+
+'<div class="card-lbl">Ordenación y límite</div>'+
+'<div style="font-family:monospace;font-size:12px;">SUM(boe.gross) DESC</div>'+
+'<p style="font-size:11px;color:#888;margin-top:6px;">La más recaudada, primera</p>'+
+'<p style="font-size:11px;color:#888;margin-top:10px;">Limitado por '+mono('Pageable')+'<br>(?page=0&size=10)</p>'+
+'</div>'+
+'</div>'+
+'<div class="tbl-wrap">'+
+'<div class="tbl-head">Resultado del GROUP BY con datos del data.sql</div>'+
+'<table><thead><tr><th>movie</th><th>COUNT</th><th>SUM screens</th><th>SUM gross</th></tr></thead><tbody>'+
+'<tr class="row-result"><td>'+p('The Dark Knight','te')+'</td><td>5</td><td>14.182</td><td><b>295.000.000</b></td></tr>'+
+'<tr><td>'+p('Inception','te')+'</td><td>5</td><td>11.734</td><td>125.300.000</td></tr>'+
+'<tr><td>'+p('Interstellar','te')+'</td><td>4</td><td>7.861</td><td>84.800.000</td></tr>'+
+'<tr><td>'+p('Dunkirk','te')+'</td><td>2</td><td>7.220</td><td>56.000.000</td></tr>'+
+'</tbody></table></div>';
+}
+},
+
+/* ── PASO 4 ── */
+{
+label:"Paso 4 — Proyección con new()",
+desc:"JPA instancia directamente el record TopGrossingMovieReport con la sintaxis new(...). No se carga ninguna entidad en memoria — Hibernate mapea las columnas del resultado al constructor del record.",
+jpql:"SELECT new es.daw.extra_api_peliculas.dto.report.TopGrossingMovieReport(\n    m.id,\n    m.title,\n    CAST(m.genre AS string),\n    COUNT(boe.id),\n    SUM(CAST(boe.screens AS long)),\n    SUM(boe.gross)\n)",
+html:function(){
+var f=[
+{arg:'m.id',type:'Long',dest:'movieId',c:'te'},
+{arg:'m.title',type:'String',dest:'title',c:'te'},
+{arg:'CAST(m.genre AS string)',type:'String',dest:'genre',c:'te'},
+{arg:'COUNT(boe.id)',type:'Long',dest:'totalEntries',c:'or'},
+{arg:'SUM(CAST(boe.screens AS long))',type:'Long',dest:'totalScreens',c:'or'},
+{arg:'SUM(boe.gross)',type:'BigDecimal',dest:'totalGross',c:'or'},
+];
+return '<div class="proj-grid">'+
+'<div><div class="card-lbl" style="margin-bottom:6px;">Argumento JPQL</div>'+
+f.map(function(x){return'<div class="proj-arg '+x.c+'">'+x.arg+'</div>';}).join('')+'</div>'+
+'<div class="proj-arr">'+f.map(function(){return'→<br>';}).join('')+'</div>'+
+'<div><div class="card-lbl" style="margin-bottom:6px;">Campo en el record</div>'+
+f.map(function(x){return'<div class="proj-field">'+mono(x.dest)+' <span style="color:#999;font-size:11px;">'+x.type+'</span></div>';}).join('')+'</div>'+
+'</div>'+
+'<p class="note">El orden de los argumentos debe coincidir exactamente con el constructor del record.<br>'+
+'CAST(m.genre AS string) convierte el enum al String que espera el parámetro genre del record.</p>';
+}
+},
+
+/* ── PASO 5 ── */
+{
+label:"Paso 5 — Resultado final",
+desc:"La query devuelve List<TopGrossingMovieReport> ordenada por totalGross DESC. The Prestige no aparece porque no tiene ningún BoxOfficeEntry: el GROUP BY sobre la join solo devuelve películas con registros.",
+jpql:"List<TopGrossingMovieReport> topGrossingMovies(\n    @Param(\"genre\") String genre,\n    @Param(\"from\")  LocalDate from,\n    @Param(\"to\")    LocalDate to,\n    Pageable pageable\n);",
+html:function(){
+return '<div class="tbl-wrap">'+
+'<div class="tbl-head">'+mono('List&lt;TopGrossingMovieReport&gt;')+'  —  ordenado por totalGross DESC</div>'+
+'<table><thead><tr>'+
+'<th>movieId</th><th>title</th><th>genre</th><th>totalEntries</th><th>totalScreens</th><th>totalGross</th>'+
+'</tr></thead><tbody>'+
+'<tr class="row-result"><td>2</td><td><b>The Dark Knight</b></td><td>'+p('ACTION','bl')+'</td><td>5</td><td>14.182</td><td><b>295.000.000</b></td></tr>'+
+'<tr><td>1</td><td>Inception</td><td>'+p('SCI_FI','te')+'</td><td>5</td><td>11.734</td><td>125.300.000</td></tr>'+
+'<tr><td>3</td><td>Interstellar</td><td>'+p('SCI_FI','te')+'</td><td>4</td><td>7.861</td><td>84.800.000</td></tr>'+
+'<tr><td>5</td><td>Dunkirk</td><td>'+p('ACTION','bl')+'</td><td>2</td><td>7.220</td><td>56.000.000</td></tr>'+
+'</tbody></table></div>'+
+'<div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;">'+
+'<div class="card" style="flex:1;min-width:200px;">'+
+'<div class="card-lbl">The Prestige no aparece porque...</div>'+
+'<p style="font-size:12px;color:#555;">No tiene ningún BoxOfficeEntry. El JOIN elimina películas sin registros de taquilla. Si se quisiera incluirlas habría que usar LEFT JOIN.</p>'+
+'</div>'+
+'<div class="card" style="flex:1;min-width:200px;">'+
+'<div class="card-lbl">Pageable controla...</div>'+
+'<p style="font-size:12px;color:#555;">El número de filas devueltas. Con ?page=0&size=2 solo se devuelven The Dark Knight e Inception.</p>'+
+'</div>'+
+'</div>';
+}
+}
+];
+
+function go(d){cur=Math.max(0,Math.min(S.length-1,cur+d));render();}
+
+function render(){
+  var s=S[cur];
+  document.getElementById('slabel').textContent=s.label;
+  document.getElementById('sdesc').textContent=s.desc;
+  document.getElementById('sjpql').textContent=s.jpql;
+  document.getElementById('bprev').disabled=cur===0;
+  document.getElementById('bnext').disabled=cur===S.length-1;
+  document.getElementById('content').innerHTML=s.html();
+
+  var dots=document.getElementById('dots');
+  dots.innerHTML='';
+  S.forEach(function(_,i){
+    var d=document.createElement('div');
+    d.className='dot'+(i===cur?' active':'');
+    dots.appendChild(d);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
