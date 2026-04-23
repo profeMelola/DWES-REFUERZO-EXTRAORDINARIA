@@ -1116,6 +1116,127 @@ ___
 
 ___
 
-# Fase III: Spring Security con autenticación externa
+# Fase III: entorno testing
+
+<img width="198" height="209" alt="imagen" src="https://github.com/user-attachments/assets/2a8ea8a8-ce59-4516-963a-5f56351dceb1" />
+
+___
+# Fase IV: Spring Security con autenticación externa
 
 [Supabase + JWT](./supabase.md)
+
+___
+
+# Fase V: uso de Postgresql
+
+<img width="198" height="209" alt="imagen" src="https://github.com/user-attachments/assets/2e328102-3bc8-4cde-8925-c50fbcc6daee" />
+
+
+docker-compose.yml:
+
+```
+# =============================================================================
+# Docker Compose — Entorno completo de desarrollo con PostgreSQL
+# =============================================================================
+# Comandos útiles:
+#   Levantar todo:          docker compose up -d
+#   Ver logs:               docker compose logs -f
+#   Parar todo:             docker compose down
+#   Parar y borrar datos:   docker compose down -v
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — base de datos principal
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine        # Alpine = imagen ligera (~80 MB)
+    container_name: peliculas_db
+    restart: unless-stopped          # Se reinicia solo si falla, no si lo paramos manualmente
+
+    environment:
+      POSTGRES_DB:       peliculasdb
+      POSTGRES_USER:     peliculas_user
+      POSTGRES_PASSWORD: peliculas_pass   # Solo para desarrollo local
+
+    ports:
+      - "5432:5432"                  # host:contenedor — accesible desde IntelliJ/DBeaver
+
+    volumes:
+      - peliculas_db_data:/var/lib/postgresql/data   # Datos persistentes entre reinicios
+
+    healthcheck:
+      # Comprueba que PostgreSQL acepta conexiones antes de arrancar la app
+      test: ["CMD-SHELL", "pg_isready -U peliculas_user -d peliculasdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # pgAdmin — cliente web para explorar la BD visualmente
+  # Accesible en: http://localhost:5050
+  # Login: admin@peliculas.dev / admin
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: peliculas_pgadmin
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy   # Espera a que PostgreSQL esté listo
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@peliculas.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+
+    ports:
+      - "5050:80"                    # http://localhost:5050
+
+    volumes:
+      - peliculas_pgadmin_data:/var/lib/pgadmin
+      # Servidor preconfigurado para que no haya que añadirlo manualmente
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+
+  # ---------------------------------------------------------------------------
+  # App Spring Boot — opcional, útil para desplegar todo junto
+  # Comentar este servicio si prefieres arrancar la app desde IntelliJ
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: peliculas_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy   # Espera a que PostgreSQL esté listo
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST:     db                # Nombre del servicio Docker, no localhost
+      DB_PORT:     5432
+      DB_NAME:     peliculasdb
+      DB_USER:     peliculas_user
+      DB_PASSWORD: peliculas_pass
+
+    ports:
+      - "8080:8080"
+
+    # Healthcheck de la app — comprueba el actuator si está disponible
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s             # Spring Boot tarda un poco en arrancar
+
+
+# =============================================================================
+# Volúmenes nombrados — persisten los datos aunque se pare el contenedor
+# =============================================================================
+volumes:
+  peliculas_db_data:
+  peliculas_pgadmin_data:
+```
