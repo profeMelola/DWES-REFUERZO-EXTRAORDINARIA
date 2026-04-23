@@ -938,7 +938,7 @@ GET /reports/top-grossing?genre=SCI_FI&from=2010-01-01&to=2015-12-31&page=0&size
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final BoxOfficeRepository boxOfficeRepository;
+    private final ReportService reportService;
 
     // Público — cualquiera puede consultar el report
     @GetMapping("/top-grossing")
