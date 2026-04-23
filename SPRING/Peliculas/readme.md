@@ -1108,6 +1108,11 @@ GET /reports/top-grossing?genre=ACTION&from=2008-01-01&to=2008-12-31
 GET /reports/top-grossing?page=0&size=2
 → ✓ 200  solo las 2 películas con mayor recaudación
 ```
+___
+
+## ¿Y si quisiera que salieran todas las películas aunque no tengan ninguna facturación todavía?
+
+<img width="151" height="206" alt="imagen" src="https://github.com/user-attachments/assets/ff1c42f5-7ef4-4cf9-9e3d-1a941eca2da3" />
 
 ___
 
