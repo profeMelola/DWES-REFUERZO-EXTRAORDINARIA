@@ -1120,6 +1120,173 @@ ___
 
 <img width="198" height="209" alt="imagen" src="https://github.com/user-attachments/assets/2a8ea8a8-ce59-4516-963a-5f56351dceb1" />
 
+## Estructura de ficheros
+
+```
+src/
+├── main/
+│   └── resources/
+│       ├── application.properties   ← BD fichero H2, para desarrollo
+│       └── data.sql                 ← datos de desarrollo
+└── test/
+    └── resources/
+        ├── application.properties   ← BD memoria H2, sobreescribe solo lo necesario
+        └── data.sql                 ← datos controlados para tests
+```
+
+---
+
+## `src/test/resources/application.properties`
+
+```properties
+spring.datasource.url=jdbc:h2:mem:pelis-test-db;DB_CLOSE_DELAY=-1;MODE=MSSQLServer
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.defer-datasource-initialization=true
+
+spring.sql.init.mode=always
+spring.sql.init.encoding=UTF-8
+
+spring.h2.console.enabled=false
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+```
+
+---
+
+## `src/test/resources/data.sql`
+
+```sql
+INSERT INTO movies (id, title, genre, release_year, duration_minutes, active) VALUES
+    (1, 'Inception',        'SCI_FI', 2010, 148, true),
+    (2, 'The Dark Knight',  'ACTION', 2008, 152, true),
+    (3, 'Interstellar',     'SCI_FI', 2014, 169, true),
+    (4, 'The Prestige',     'DRAMA',  2006, 130, true);
+
+INSERT INTO countries (id, code, name, active) VALUES
+    (1, 'USA', 'United States', true),
+    (2, 'ESP', 'Spain',         true);
+
+INSERT INTO distributors (id, name, country_id, active) VALUES
+    (1, 'Warner Bros USA',    1, true),
+    (2, 'Warner Bros España', 2, true);
+
+INSERT INTO releases (id, movie_id, distributor_id, release_date, active) VALUES
+    (1, 1, 1, '2010-07-16', true),
+    (2, 1, 2, '2010-08-20', true),
+    (3, 2, 1, '2008-07-18', true),
+    (4, 3, 1, '2014-11-07', true);
+
+INSERT INTO box_office_entries (release_id, country_id, period_start, period_end, gross, screens, active) VALUES
+    (1, 1, '2010-07-16', '2010-07-22', 62000000.00, 3792, true),
+    (1, 1, '2010-07-23', '2010-07-29', 36000000.00, 3792, true),
+    (1, 1, '2010-07-30', '2010-08-05', 20000000.00, 3500, true),
+    (2, 2, '2010-08-20', '2010-08-26',  4500000.00,  350, true),
+    (2, 2, '2010-08-27', '2010-09-02',  2800000.00,  300, true),
+    (3, 1, '2008-07-18', '2008-07-24', 158000000.00, 4366, true),
+    (3, 1, '2008-07-25', '2008-07-31',  75000000.00, 4366, true),
+    (3, 1, '2008-08-01', '2008-08-07',  43000000.00, 4200, true),
+    (4, 1, '2014-11-07', '2014-11-13',  47500000.00, 3561, true),
+    (4, 1, '2014-11-14', '2014-11-20',  29000000.00, 3500, true);
+```
+
+---
+
+## `ReportControllerTest.java`
+
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class ReportControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    @DisplayName("Sin filtros → orden: Dark Knight > Inception > Interstellar")
+    void sinFiltros() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].title").value("The Dark Knight"))
+            .andExpect(jsonPath("$[1].title").value("Inception"))
+            .andExpect(jsonPath("$[2].title").value("Interstellar"));
+    }
+
+    @Test
+    @DisplayName("Sin filtros → The Prestige no aparece (sin taquilla)")
+    void sinTaquillaNoAparece() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[?(@.title == 'The Prestige')]").isEmpty());
+    }
+
+    @Test
+    @DisplayName("Filtro género SCI_FI → solo Inception e Interstellar")
+    void filtroGeneroSciFi() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing").param("genre", "SCI_FI"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].title").value("Inception"))
+            .andExpect(jsonPath("$[1].title").value("Interstellar"));
+    }
+
+    @Test
+    @DisplayName("Filtro año 2010 → solo Inception")
+    void filtroAnio2010() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing")
+                .param("from", "2010-01-01")
+                .param("to",   "2010-12-31"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].title").value("Inception"));
+    }
+
+    @Test
+    @DisplayName("Filtros combinados ACTION + 2008 → solo The Dark Knight")
+    void filtrosCombinados() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing")
+                .param("genre", "ACTION")
+                .param("from",  "2008-01-01")
+                .param("to",    "2008-12-31"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].title").value("The Dark Knight"));
+    }
+
+    @Test
+    @DisplayName("Paginación size=2 → solo las 2 películas con mayor recaudación")
+    void paginacion() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing")
+                .param("page", "0")
+                .param("size", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].title").value("The Dark Knight"))
+            .andExpect(jsonPath("$[1].title").value("Inception"));
+    }
+
+    @Test
+    @DisplayName("from posterior a to → 400 Bad Request")
+    void fromPosteriorATo() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing")
+                .param("from", "2020-12-31")
+                .param("to",   "2010-01-01"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Género inexistente → lista vacía")
+    void generoInexistente() throws Exception {
+        mockMvc.perform(get("/reports/top-grossing")
+                .param("genre", "HORROR"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
+    }
+}
+```
 ___
 # Fase IV: Spring Security con autenticación externa
 
