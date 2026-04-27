@@ -1206,6 +1206,17 @@ INSERT INTO box_office_entries (release_id, country_id, period_start, period_end
 ## `ReportControllerTest.java`
 
 ```java
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class ReportControllerTest {
@@ -1217,84 +1228,83 @@ class ReportControllerTest {
     @DisplayName("Sin filtros → orden: Dark Knight > Inception > Interstellar")
     void sinFiltros() throws Exception {
         mockMvc.perform(get("/reports/top-grossing"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].title").value("The Dark Knight"))
-            .andExpect(jsonPath("$[1].title").value("Inception"))
-            .andExpect(jsonPath("$[2].title").value("Interstellar"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("The Dark Knight"))
+                .andExpect(jsonPath("$[1].title").value("Inception"))
+                .andExpect(jsonPath("$[2].title").value("Interstellar"));
     }
 
     @Test
     @DisplayName("Sin filtros → The Prestige no aparece (sin taquilla)")
     void sinTaquillaNoAparece() throws Exception {
         mockMvc.perform(get("/reports/top-grossing"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[?(@.title == 'The Prestige')]").isEmpty());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.title == 'The Prestige')]").isEmpty());
     }
 
     @Test
     @DisplayName("Filtro género SCI_FI → solo Inception e Interstellar")
     void filtroGeneroSciFi() throws Exception {
         mockMvc.perform(get("/reports/top-grossing").param("genre", "SCI_FI"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[0].title").value("Inception"))
-            .andExpect(jsonPath("$[1].title").value("Interstellar"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].title").value("Inception"))
+                .andExpect(jsonPath("$[1].title").value("Interstellar"));
     }
 
     @Test
     @DisplayName("Filtro año 2010 → solo Inception")
     void filtroAnio2010() throws Exception {
         mockMvc.perform(get("/reports/top-grossing")
-                .param("from", "2010-01-01")
-                .param("to",   "2010-12-31"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(1))
-            .andExpect(jsonPath("$[0].title").value("Inception"));
+                        .param("from", "2010-01-01")
+                        .param("to",   "2010-12-31"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].title").value("Inception"));
     }
 
     @Test
     @DisplayName("Filtros combinados ACTION + 2008 → solo The Dark Knight")
     void filtrosCombinados() throws Exception {
         mockMvc.perform(get("/reports/top-grossing")
-                .param("genre", "ACTION")
-                .param("from",  "2008-01-01")
-                .param("to",    "2008-12-31"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(1))
-            .andExpect(jsonPath("$[0].title").value("The Dark Knight"));
+                        .param("genre", "ACTION")
+                        .param("from",  "2008-01-01")
+                        .param("to",    "2008-12-31"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].title").value("The Dark Knight"));
     }
 
     @Test
     @DisplayName("Paginación size=2 → solo las 2 películas con mayor recaudación")
     void paginacion() throws Exception {
         mockMvc.perform(get("/reports/top-grossing")
-                .param("page", "0")
-                .param("size", "2"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[0].title").value("The Dark Knight"))
-            .andExpect(jsonPath("$[1].title").value("Inception"));
+                        .param("page", "0")
+                        .param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].title").value("The Dark Knight"))
+                .andExpect(jsonPath("$[1].title").value("Inception"));
     }
 
     @Test
     @DisplayName("from posterior a to → 400 Bad Request")
     void fromPosteriorATo() throws Exception {
         mockMvc.perform(get("/reports/top-grossing")
-                .param("from", "2020-12-31")
-                .param("to",   "2010-01-01"))
-            .andExpect(status().isBadRequest());
+                        .param("from", "2020-12-31")
+                        .param("to",   "2010-01-01"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Género inexistente → lista vacía")
     void generoInexistente() throws Exception {
         mockMvc.perform(get("/reports/top-grossing")
-                .param("genre", "HORROR"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(0));
+                        .param("genre", "HORROR"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
-}
-```
+}```
 ___
 # Fase IV: Spring Security con autenticación externa
 
