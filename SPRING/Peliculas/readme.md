@@ -1114,6 +1114,14 @@ ___
 
 <img width="151" height="206" alt="imagen" src="https://github.com/user-attachments/assets/ff1c42f5-7ef4-4cf9-9e3d-1a941eca2da3" />
 
+Ten en cuenta que en vez de esto:
+
+![alt text](image-2.png)
+
+Obtener esto:
+
+![alt text](image-3.png)
+
 ___
 
 # Fase III: entorno testing
