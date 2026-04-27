@@ -1128,6 +1128,12 @@ ___
 
 <img width="198" height="209" alt="imagen" src="https://github.com/user-attachments/assets/2a8ea8a8-ce59-4516-963a-5f56351dceb1" />
 
+Antes de nada, **hay que actualizar IntelliJ para que no hayan problemas con los test:** IntelliJ 2024.3.x no es compatible con JUnit Platform 1.12 que viene con Spring Boot 4.x.
+
+![alt text](image-5.png)
+
+![alt text](image-4.png)
+
 ## Estructura de ficheros
 
 ```
