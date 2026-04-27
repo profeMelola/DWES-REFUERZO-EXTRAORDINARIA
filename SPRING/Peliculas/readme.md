@@ -1310,8 +1310,11 @@ class ReportControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
-}```
+}
+```
+
 ___
+
 # Fase IV: Spring Security con autenticación externa
 
 [Supabase + JWT](./supabase.md)
