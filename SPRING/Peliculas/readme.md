@@ -1134,6 +1134,11 @@ Antes de nada, **hay que actualizar IntelliJ para que no hayan problemas con los
 
 ![alt text](image-4.png)
 
+Además, indicar que para testing, Maven es el encargado de ejecutar, no el entorno runtime de IntelliJ:
+
+
+![alt text](image-6.png)
+
 ## Estructura de ficheros
 
 ```
