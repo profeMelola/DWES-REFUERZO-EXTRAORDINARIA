@@ -1139,6 +1139,8 @@ Además, indicar que para testing, Maven es el encargado de ejecutar, no el ento
 
 ![alt text](image-6.png)
 
+
+
 ## Estructura de ficheros
 
 ```
@@ -1317,6 +1319,8 @@ class ReportControllerTest {
     }
 }
 ```
+
+<img width="198" height="209" alt="imagen" src="https://github.com/user-attachments/assets/2e328102-3bc8-4cde-8925-c50fbcc6daee" />
 
 ___
 
