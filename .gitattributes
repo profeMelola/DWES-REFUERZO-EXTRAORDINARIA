@@ -1,0 +1,27 @@
+# Normaliza texto en el repo a LF
+* text=auto eol=lf
+
+# Código fuente (forzar LF)
+*.java      text eol=lf
+*.kt        text eol=lf
+*.groovy    text eol=lf
+*.xml       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.properties text eol=lf
+*.gradle    text eol=lf
+*.md        text eol=lf
+*.sh        text eol=lf
+
+# Scripts Windows (si los tienes, forzar CRLF)
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# Binarios (nunca tocar)
+*.png       -text
+*.jpg       -text
+*.jpeg      -text
+*.gif       -text
+*.pdf       -text
+*.jar       -text
+*.zip       -text
