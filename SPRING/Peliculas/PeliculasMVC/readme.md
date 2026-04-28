@@ -46,13 +46,9 @@ El proyecto **arrancamos juntos en clase**, por lo que ya dispones de la estruct
 
 ---
 
-## Módulo 2 — Consumo de la API REST
-
-### Objetivo
+## Módulo 1 — Consumo de la API REST
 
 Implementar la clase `MovieApiClient` que encapsula todas las llamadas HTTP a la API REST de películas. Los controladores **nunca llamarán directamente** a la API; siempre lo harán a través de este cliente.
-
-### Qué tienes que completar
 
 Se te proporciona la clase con la firma de los métodos. Debes implementar el cuerpo de cada uno usando `WebClient`:
 
@@ -60,7 +56,7 @@ Se te proporciona la clase con la firma de los métodos. Debes implementar el cu
 @Service
 public class MovieApiClient {
 
-    // TODO: inyectar RestTemplate y la URL base desde application.properties
+    // TODO: inyectar WebClient y la URL base desde application.properties
 
     public List<MovieResponseDto> getAllMovies() {
         // TODO
@@ -99,9 +95,7 @@ public class MovieApiClient {
 
 ---
 
-## Módulo 3 — Vistas Thymeleaf
-
-### Objetivo
+## Módulo 2 — Vistas Thymeleaf
 
 Completar las plantillas HTML proporcionadas para que muestren correctamente los datos que reciben del controlador mediante el modelo de Spring MVC.
 
@@ -297,9 +291,7 @@ Página mostrada automáticamente cuando un usuario sin permisos intenta acceder
 
 ---
 
-## Módulo 4 — Seguridad con Spring Security
-
-### Objetivo
+## Módulo 3 — Seguridad con Spring Security
 
 Configurar la seguridad de la aplicación para que solo usuarios autenticados puedan acceder a las películas, y solo los administradores puedan gestionar usuarios.
 
@@ -309,8 +301,6 @@ Configurar la seguridad de la aplicación para que solo usuarios autenticados pu
 
 > /admin/**    →  solo ADMIN      →  si USER: 403
 
-
-### Entidades de la BD local
 
 La aplicación tiene su propia BD H2 independiente de la API. En ella se almacenan los usuarios.
 
@@ -324,29 +314,6 @@ La aplicación tiene su propia BD H2 independiente de la API. En ella se almacen
 | `/admin/**`        | Solo rol `ADMIN`          |
 | Cualquier otra     | Autenticado               |
 
-### Qué tienes que completar
-
-Se te proporciona `SecurityConfig.java` con los `@Bean` vacíos:
-
-```java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-
-    // TODO: inyectar AppUserDetailsService
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // TODO: configurar authorizeHttpRequests, formLogin, logout
-        return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // TODO: devolver BCryptPasswordEncoder
-    }
-}
-```
 
 ### Datos de prueba (`data.sql`)
 
@@ -362,9 +329,7 @@ INSERT INTO app_users (username, password, role, active) VALUES
 
 ---
 
-## Módulo 5 — CRUD de Usuarios (rol ADMIN)
-
-### Objetivo
+## Módulo 4 — CRUD de Usuarios (rol ADMIN)
 
 Implementar la gestión completa de usuarios de la BD local, accesible únicamente para administradores.
 
@@ -402,26 +367,13 @@ Elimina el usuario por id. Usa `POST` en lugar de `DELETE` porque los formulario
 
 > ⚠️ Debes evitar que el administrador se borre a sí mismo. Usa `Authentication` para obtener el usuario en sesión y compruébalo antes de borrar.
 
-### Acceso al usuario en sesión
-
-```java
-@PostMapping("/{id}/delete")
-public String deleteUser(@PathVariable Long id, Authentication authentication) {
-    String currentUsername = authentication.getName();
-    // TODO: comprobar que no se está borrando a sí mismo
-}
-```
 
 ---
 
-## Módulo 6 — Lista de Favoritos
+## Módulo 5 — Lista de Favoritos
 
-
-### Objetivo
 
 Permitir que cada usuario guarde sus películas favoritas. Los favoritos se almacenan en la BD H2 local relacionando el `userId` (local) con el `movieId` (id de la API remota).
-
-### Modelo local
 
 ```java
 @Entity
@@ -461,7 +413,5 @@ public class Favorite {
 │  ⭐ The Godfather       (1972)  DRAMA       🔍  ✖  │
 └─────────────────────────────────────────────────────┘
 ```
-
-> Para mostrar los datos de cada favorito debes recuperar el `MovieResponseDto` de la API usando el `movieId` almacenado localmente.
 
 
