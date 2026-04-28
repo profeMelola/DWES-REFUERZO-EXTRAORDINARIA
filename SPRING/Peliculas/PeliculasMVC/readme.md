@@ -82,11 +82,20 @@ public class MovieApiClient {
 |--------|----------------------|--------------------------|---------------------|
 | GET    | `/movies`            | Listado de todas         | `List<MovieResponseDto>` |
 | GET    | `/movies/{id}`       | Detalle de una película  | `MovieResponseDto`  |
-| GET    | `/movies/{id}/cast`  | Reparto de una película  | `List<CastResponseDto>` |
+| GET    | `/movies/{id}/cast`  | Reparto de una película  | `List<ActorCastDto>` |
 
 > La URL base de la API se configura en `application.properties` como `api.movies.base-url` e inyecta con `@Value`.
 
+**ActorCastDto:**
 
+```
+  {
+    "actorId": 1,
+    "stageName": "DiCaprio",
+    "characterName": "Cobb",
+    "screenMinutes": 110
+  }
+```
 
 ---
 
