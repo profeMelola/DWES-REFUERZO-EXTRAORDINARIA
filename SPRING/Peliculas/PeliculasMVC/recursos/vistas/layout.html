@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineApp</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --brand:      #1a1a2e;
+            --brand-mid:  #16213e;
+            --accent:     #e94560;
+            --accent-dim: #c73652;
+            --bg:         #f5f5f0;
+            --surface:    #ffffff;
+            --border:     #e2e2da;
+            --text:       #1a1a2e;
+            --text-muted: #6b6b80;
+            --radius:     6px;
+            --shadow:     0 1px 3px rgba(0,0,0,.08);
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            font-size: 15px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── NAV ── */
+        nav {
+            background: var(--brand);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: .5px;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-brand span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,.8);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(255,255,255,.1);
+            color: #fff;
+        }
+
+        .nav-links .nav-badge {
+            font-size: 10px;
+            background: var(--accent);
+            color: #fff;
+            padding: 1px 6px;
+            border-radius: 20px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: rgba(255,255,255,.7);
+        }
+
+        .nav-user strong {
+            color: #fff;
+        }
+
+        .btn-logout {
+            background: rgba(233,69,96,.25);
+            color: var(--accent);
+            border: 1px solid rgba(233,69,96,.4);
+            padding: 5px 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(233,69,96,.4);
+        }
+
+        /* ── MAIN CONTENT ── */
+        main {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            margin-bottom: 1.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.6rem;
+            font-weight: normal;
+            color: var(--brand);
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--brand);
+            color: rgba(255,255,255,.9);
+            font-weight: normal;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafaf7; }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: .3px;
+        }
+
+        .badge-active   { background: #e6f4ea; color: #1e7e34; }
+        .badge-inactive { background: #fdecea; color: #c62828; }
+        .badge-admin    { background: #fff3e0; color: #e65100; }
+        .badge-user     { background: #e8eaf6; color: #283593; }
+        .badge-genre    { background: #f3e5f5; color: #6a1b9a; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-block;
+            padding: 7px 18px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: opacity .15s, background .15s;
+        }
+
+        .btn-primary  { background: var(--brand); color: #fff; }
+        .btn-primary:hover { background: var(--brand-mid); }
+        .btn-accent   { background: var(--accent); color: #fff; }
+        .btn-accent:hover { background: var(--accent-dim); }
+        .btn-outline  { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: var(--bg); }
+        .btn-danger   { background: #fdecea; color: #c62828; border: 1px solid #f5c6cb; }
+        .btn-danger:hover { background: #f5c6cb; }
+        .btn-sm       { padding: 4px 12px; font-size: 12px; }
+
+        /* ── FORMS ── */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--surface);
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--brand);
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+
+        /* ── ALERTS ── */
+        .alert {
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error   { background: #fdecea; color: #c62828; border-left: 3px solid #c62828; }
+        .alert-success { background: #e6f4ea; color: #1e7e34; border-left: 3px solid #1e7e34; }
+
+        /* ── BACK LINK ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 1.25rem;
+        }
+
+        .back-link:hover { color: var(--text); }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--brand);
+            color: rgba(255,255,255,.4);
+            text-align: center;
+            font-size: 12px;
+            padding: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     FRAGMENTO: nav  (th:fragment="nav")
+     ═══════════════════════════════════════════ -->
+<nav>
+    <a href="/movies" class="nav-brand">&#9654; Cine<span>App</span></a>
+
+    <ul class="nav-links">
+        <li><a href="/movies" class="active">Películas</a></li>
+        <!-- Solo visible para rol ADMIN -->
+        <li>
+            <a href="/admin/users">
+                Admin <span class="nav-badge">ADMIN</span>
+            </a>
+        </li>
+        <!-- Solo visible para rol USER -->
+        <li><a href="/favorites">Favoritos</a></li>
+    </ul>
+
+    <div class="nav-user">
+        <!-- Nombre del usuario en sesión -->
+        Hola, <strong>admin</strong>
+        <a href="/logout" class="btn-logout">Salir</a>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     FRAGMENTO: main (th:fragment="layout(content)")
+     El contenido de cada página va aquí dentro
+     ═══════════════════════════════════════════ -->
+<main>
+    <!-- El contenido de cada página va aquí -->
+    <p style="color: var(--text-muted); font-style: italic;">[ Contenido de la página ]</p>
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FRAGMENTO: footer (th:fragment="footer")
+     ═══════════════════════════════════════════ -->
+<footer>
+    CineApp &mdash; Trabajo práctico Spring Boot MVC &middot; 2025
+</footer>
+
+</body>
+</html>

@@ -121,7 +121,18 @@ src/main/resources/templates/
     └── 403.html             ← A COMPLETAR
 ```
 
-> `layout.html` está completamente implementado. Usa `th:replace` o `th:insert` para incluirlo en tus vistas.
+
+> `layout.html` — nav, main, footer con todo el CSS del sistema de diseño compartido. Es el que copiarán los demás con th:replace
+
+> `list.html` — tabla completa con badges de género/estado, fila oscurecida para películas inactivas, botón "Ver"
+
+> `detail.html` — cabecera de película, grid de metadatos, tabla de reparto, bloque comentado para reparto vacío
+
+> `login.html` — formulario centrado, alerta de error visible (los alumnos aprenderán a ocultarla con th:if), campo CSRF ya puesto como placeholder
+
+> `users.html` — tabla con badges de rol, botones de borrar como formularios POST, fila del usuario actual deshabilitada
+
+> `403.html` — página de error limpia con código grande y enlace de vuelta
 
 ---
 
@@ -291,6 +302,13 @@ Página mostrada automáticamente cuando un usuario sin permisos intenta acceder
 ### Objetivo
 
 Configurar la seguridad de la aplicación para que solo usuarios autenticados puedan acceder a las películas, y solo los administradores puedan gestionar usuarios.
+
+> / o /movies  →  no autenticado  →  /login
+
+>                autenticado     →  /movies (listado)
+
+> /admin/**    →  solo ADMIN      →  si USER: 403
+
 
 ### Entidades de la BD local
 

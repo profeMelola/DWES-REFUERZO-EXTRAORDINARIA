@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso denegado — CineApp</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --brand: #1a1a2e; --accent: #e94560;
+            --bg: #f5f5f0; --surface: #ffffff; --border: #e2e2da;
+            --text: #1a1a2e; --text-muted: #6b6b80; --radius: 6px;
+        }
+        body { font-family: 'Georgia', serif; font-size: 15px; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--brand); display: flex; align-items: center; justify-content: center; height: 56px; }
+        .nav-brand { font-size: 1.2rem; font-weight: bold; color: #fff; text-decoration: none; }
+        .nav-brand span { color: var(--accent); }
+
+        .error-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+
+        .error-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: .5rem;
+        }
+
+        .error-title {
+            font-size: 1.3rem;
+            font-weight: normal;
+            color: var(--brand);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .divider {
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+            margin: 1rem auto 1.5rem;
+            border-radius: 2px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            padding: 10px 24px;
+            background: var(--brand);
+            color: #fff;
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .btn-home:hover { background: #16213e; }
+
+        footer { background: var(--brand); color: rgba(255,255,255,.4); text-align: center; font-size: 12px; padding: 14px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/movies" class="nav-brand">&#9654; Cine<span>App</span></a>
+</header>
+
+<div class="error-wrapper">
+    <div class="error-card">
+        <div class="error-code">403</div>
+        <div class="divider"></div>
+        <h1 class="error-title">Acceso denegado</h1>
+        <p class="error-message">
+            No tienes permisos suficientes para acceder a esta página.<br>
+            <!-- En Thymeleaf: th:text="${message}" si el controlador lo añade al modelo -->
+            Si crees que es un error, contacta con el administrador.
+        </p>
+        <!-- th:href="@{/movies}" -->
+        <a href="/movies" class="btn-home">Volver al catálogo</a>
+    </div>
+</div>
+
+<footer>
+    CineApp &mdash; Trabajo práctico Spring Boot MVC &middot; 2025
+</footer>
+
+</body>
+</html>
