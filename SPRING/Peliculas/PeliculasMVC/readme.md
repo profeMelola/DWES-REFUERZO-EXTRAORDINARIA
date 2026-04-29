@@ -53,24 +53,80 @@ Implementar la clase `MovieApiClient` que encapsula todas las llamadas HTTP a la
 Se te proporciona la clase con la firma de los métodos. Debes implementar el cuerpo de cada uno usando `WebClient`:
 
 ```java
-@Service
+@Component
 public class MovieApiClient {
 
-    // TODO: inyectar WebClient y la URL base desde application.properties
+    private final WebClient movieWebClient;
 
+    public MovieApiClient(WebClient movieWebClient) {
+        this.movieWebClient = movieWebClient;
+    }
+
+    // GET /movies — listado completo
     public List<MovieResponseDto> getAllMovies() {
-        // TODO
+        List<MovieResponseDto> movies = movieWebClient.get()
+                .uri("/movies")
+                .retrieve()
+                .onStatus(status -> status.isError(), resp ->
+                        resp.bodyToMono(String.class).defaultIfEmpty("")
+                                .flatMap(body -> Mono.error(
+                                        new MovieApiException("Error al obtener películas: "
+                                                              + resp.statusCode() + " " + body)))
+                )
+                .bodyToFlux(MovieResponseDto.class)
+                .collectList()
+                .onErrorMap(ex -> {
+                    if (ex instanceof MovieApiException) return ex;
+                    return new MovieApiException("No se pudo conectar con /movies. Detalle: " + ex.getMessage());
+                })
+                .block();
+
+        return movies != null ? movies : Collections.emptyList();
     }
 
+    // GET /movies/{id} — detalle sin reparto
     public MovieResponseDto getMovieById(Long id) {
-        // TODO
+        return movieWebClient.get()
+                .uri("/movies/{id}", id)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(), resp ->
+                        Mono.empty()
+                )
+                .onStatus(status -> status.is5xxServerError(), resp ->
+                        resp.bodyToMono(String.class).defaultIfEmpty("")
+                                .flatMap(body -> Mono.error(
+                                        new MovieApiException("Error del servidor al obtener película "
+                                                              + id + ": " + body)))
+                )
+                .bodyToMono(MovieResponseDto.class)
+                .onErrorMap(ex -> {
+                    if (ex instanceof MovieApiException) return ex;
+                    return new MovieApiException("No se pudo conectar con /movies/" + id + ". Detalle: " + ex.getMessage());
+                })
+                .block();
     }
 
-    public List<CastResponseDto> getCastByMovieId(Long id) {
-        // TODO
-    }
-}
-```
+    // GET /movies/{id}/with-cast — detalle con reparto embebido
+    public MovieWithCastDto getMovieWithCast(Long id) {
+        return movieWebClient.get()
+                .uri("/movies/{id}/with-cast", id)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(), resp ->
+                        Mono.empty()
+                )
+                .onStatus(status -> status.is5xxServerError(), resp ->
+                        resp.bodyToMono(String.class).defaultIfEmpty("")
+                                .flatMap(body -> Mono.error(
+                                        new MovieApiException("Error del servidor al obtener reparto de película "
+                                                              + id + ": " + body)))
+                )
+                .bodyToMono(MovieWithCastDto.class)
+                .onErrorMap(ex -> {
+                    if (ex instanceof MovieApiException) return ex;
+                    return new MovieApiException("No se pudo conectar con /movies/" + id + "/with-cast. Detalle: " + ex.getMessage());
+                })
+                .block();
+    }```
 
 ### Endpoints de la API que debes consumir
 
