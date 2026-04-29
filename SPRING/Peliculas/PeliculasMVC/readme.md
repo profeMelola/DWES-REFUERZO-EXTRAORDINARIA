@@ -126,7 +126,8 @@ public class MovieApiClient {
                     return new MovieApiException("No se pudo conectar con /movies/" + id + "/with-cast. Detalle: " + ex.getMessage());
                 })
                 .block();
-    }```
+    }
+```
 
 ### Endpoints de la API que debes consumir
 
