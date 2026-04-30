@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${movie.title})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <a th:href="@{/movies}" class="back-link">&#8592; Volver al catálogo</a>
+
+    <div class="card">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between;
+                    gap:1rem; margin-bottom:1.5rem">
+            <div>
+                <h1 style="font-size:1.8rem; font-weight:normal; color:var(--brand)">
+<!--                    <span th:text="${movie.title}">Título</span>-->
+                    <span th:text="${movie.kk}">Título</span>
+                    <span style="font-size:1.2rem; color:var(--text-muted); margin-left:8px"
+                          th:text="'(' + ${movie.releaseYear} + ')'"></span>
+                </h1>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:8px">
+                    <span class="badge badge-genre" th:text="${movie.genre}">GÉNERO</span>
+                    <span class="badge"
+                          th:classappend="${movie.active} ? 'badge-active' : 'badge-inactive'"
+                          th:text="${movie.active} ? 'Activa' : 'Inactiva'">Estado</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem">
+            <div>
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+                            color:var(--text-muted); margin-bottom:4px">Título</div>
+                <div th:text="${movie.title}">Título</div>
+            </div>
+            <div>
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+                            color:var(--text-muted); margin-bottom:4px">Año de estreno</div>
+                <div th:text="${movie.releaseYear}">2000</div>
+            </div>
+            <div>
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+                            color:var(--text-muted); margin-bottom:4px">Género</div>
+                <div th:text="${movie.genre}">GÉNERO</div>
+            </div>
+            <div>
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+                            color:var(--text-muted); margin-bottom:4px">Estado</div>
+                <div th:text="${movie.active} ? 'Activa' : 'Inactiva'">Estado</div>
+            </div>
+        </div>
+
+        <p style="font-size:12px; text-transform:uppercase; letter-spacing:.5px;
+                  color:var(--brand); font-weight:bold; margin-bottom:1rem;
+                  padding-bottom:.5rem; border-bottom:1px solid var(--border)">Reparto</p>
+
+        <table th:if="${not #lists.isEmpty(cast)}">
+            <thead>
+                <tr>
+                    <th>Actor</th>
+                    <th>Personaje</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="member : ${cast}">
+                    <td th:text="${member.actorName}">Nombre del actor</td>
+                    <td th:text="${member.characterName}">Nombre del personaje</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:unless="${not #lists.isEmpty(cast)}"
+             style="text-align:center; padding:2rem; color:var(--text-muted);
+                    font-style:italic; font-size:14px">
+            Esta película no tiene reparto registrado.
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
