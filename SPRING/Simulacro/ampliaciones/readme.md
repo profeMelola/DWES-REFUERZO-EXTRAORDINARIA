@@ -205,3 +205,24 @@ GET http://localhost:8080/api/movies?page=2&size=5&sort=title,asc
 - Ninguna película aparece en dos páginas distintas
 - El orden alfabético es continuo entre páginas
 - Sumando los `"numberOfElements"` de las 3 páginas da 15
+
+# 2. Enumerados
+
+Vamos a usar las nacionalidades del actor como enumerado:
+
+Tomamos como referencia las nacionalidades de BD:
+
+```
+INSERT INTO actors (stage_name, full_name, nationality, active) VALUES
+                                                                    ('DiCaprio',   'Leonardo DiCaprio', 'American',   true),
+                                                                    ('Caine',      'Michael Caine',     'British',    true),
+                                                                    ('Nolan',      'Christian Bale',    'British',    true),
+                                                                    ('Murphy',     'Cillian Murphy',    'Irish',      true),
+                                                                    ('Cotillard',  'Marion Cotillard',  'French',     true),
+                                                                    ('Oldman',     'Gary Oldman',       'British',    false); -- inactivo para filtros
+
+``` 
+
+Modificaciones en ActorController:
+    - endpoints: post y put / patch (modificar la nacionalidad el actor)
+
