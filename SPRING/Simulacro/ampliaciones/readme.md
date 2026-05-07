@@ -226,3 +226,8 @@ INSERT INTO actors (stage_name, full_name, nationality, active) VALUES
 Modificaciones en ActorController:
     - endpoints: post y put / patch (modificar la nacionalidad el actor)
 
+# 3. Añadir nuevas tablas al modelo. Nuevas relaciones
+
+## 3.1. Relación ManyToMany
+
+¿Qué relación @ManyToMany podríamos implementar?
