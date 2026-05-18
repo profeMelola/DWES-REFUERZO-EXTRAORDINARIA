@@ -233,3 +233,232 @@ Modificaciones en ActorController:
 ¿Qué relación @ManyToMany podríamos implementar?
 
 [Propuesta ManyToMany](manyToMany.md)
+
+# 4. Añadir imágenes. Integración de carteles de películas con TMDB API
+
+Añadimos carteles oficiales al listado de películas usando [The Movie Database (TMDB)](https://www.themoviedb.org),
+sin modificar el API REST. El MVC consulta TMDB directamente y cachea los resultados en memoria.
+
+---
+
+## 1. Obtener la API key de TMDB
+
+1. Regístrate en [themoviedb.org](https://www.themoviedb.org/signup) — es gratuito
+2. Ve a **Settings → API** (en tu avatar, arriba a la derecha)
+3. Clica **Create → Developer**
+4. Rellena el formulario (uso personal/educativo; en URL puedes poner `http://localhost`)
+5. Copia el **API Read Access Token** (un JWT largo) — es el que usaremos
+
+---
+
+## 2. Configuración — `application.properties`
+
+```properties
+tmdb.api.token=Bearer eyJhbGc...   # pega aquí el token completo, con "Bearer "
+tmdb.api.base-url=https://api.themoviedb.org/3
+tmdb.image.base-url=https://image.tmdb.org/t/p/w200
+```
+
+---
+
+## 3. `PosterService.java`
+
+Busca el cartel en TMDB por título y lo cachea en un `ConcurrentHashMap`
+para no repetir llamadas en cada paginación.
+
+```java
+@Service
+public class PosterService {
+
+    private static final String FALLBACK = "/images/no-poster.png";
+
+    private final WebClient tmdbClient;
+    private final String imageBaseUrl;
+
+    // Caché en memoria: movieId → posterUrl
+    private final Map<Long, String> cache = new ConcurrentHashMap<>();
+
+    public PosterService(
+            @Value("${tmdb.api.base-url}")   String apiBaseUrl,
+            @Value("${tmdb.api.token}")      String token,
+            @Value("${tmdb.image.base-url}") String imageBaseUrl) {
+
+        this.imageBaseUrl = imageBaseUrl;
+        this.tmdbClient = WebClient.builder()
+                .baseUrl(apiBaseUrl)
+                .defaultHeader("Authorization", token)
+                .defaultHeader("Accept", "application/json")
+                .build();
+    }
+
+    /**
+     * Devuelve un mapa movieId → posterUrl para todas las películas de la página.
+     * Las que ya están en caché no generan llamada a TMDB.
+     */
+    public Map<Long, String> getPosterUrls(List<MovieResponseDto> movies) {
+        Map<Long, String> result = new HashMap<>();
+        for (MovieResponseDto movie : movies) {
+            String url = cache.computeIfAbsent(movie.id(), id -> fetchPoster(movie.title()));
+            result.put(movie.id(), url);
+        }
+        return result;
+    }
+
+    private String fetchPoster(String title) {
+        try {
+            TmdbSearchResponse response = tmdbClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/search/movie")
+                            .queryParam("query", title)
+                            .queryParam("language", "es-ES")
+                            .queryParam("page", 1)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(TmdbSearchResponse.class)
+                    .block();
+
+            if (response == null || response.results().isEmpty()) return FALLBACK;
+
+            String posterPath = response.results().get(0).poster_path();
+            return posterPath != null ? imageBaseUrl + posterPath : FALLBACK;
+
+        } catch (Exception e) {
+            return FALLBACK;
+        }
+    }
+
+    // ── Records internos para deserializar la respuesta de TMDB ──
+
+    private record TmdbSearchResponse(List<TmdbMovie> results) {}
+
+    private record TmdbMovie(String poster_path) {}
+}
+```
+
+---
+
+## 4. Controlador — añadir los posters al modelo
+
+```java
+@GetMapping
+public String list(
+        @RequestParam(defaultValue = "0")     int page,
+        @RequestParam(defaultValue = "10")    int size,
+        @RequestParam(defaultValue = "title") String sort,
+        @RequestParam(defaultValue = "asc")   String dir,
+        Model model) {
+
+    PageResponse<MovieResponseDto> movies = movieService.getAllMovies(page, size, sort, dir);
+
+    model.addAttribute("page",    movies);
+    model.addAttribute("size",    size);
+    model.addAttribute("sort",    sort);
+    model.addAttribute("dir",     dir);
+    model.addAttribute("posters", posterService.getPosterUrls(movies.content())); // ← nuevo
+
+    return "list";
+}
+```
+
+---
+
+## 5. Vista `list.html` — columna del cartel
+
+Añade la columna en `<thead>` y la imagen en cada fila de `<tbody>`:
+
+```html
+<thead>
+    <tr>
+        <th class="col-poster"></th>   <!-- ← nueva columna -->
+        <th class="col-id">ID</th>
+        <th>Título</th>
+        <th class="col-year">Año</th>
+        <th class="col-genre">Género</th>
+        <th class="col-state">Estado</th>
+        <th class="col-action"></th>
+    </tr>
+</thead>
+<tbody>
+    <tr th:each="movie : ${page.content}">
+        <td>
+            <img th:src="${posters[movie.id]}"
+                 alt="Cartel"
+                 class="movie-poster"/>
+        </td>
+        <td th:text="${movie.id}">1</td>
+        <td class="film-title" th:text="${movie.title}">Inception</td>
+        <td th:text="${movie.releaseYear}">2010</td>
+        <td><span class="badge badge-genre" th:text="${movie.genre}">SCI_FI</span></td>
+        <td><span class="badge badge-active"
+                  th:text="${movie.active} ? 'Activa' : 'Inactiva'">Activa</span></td>
+        <td style="text-align:right">
+            <a th:href="@{/movies/{id}(id=${movie.id})}" class="btn btn-primary btn-sm">Ver</a>
+            <div th:if="${#authorization.expression('hasRole(''USER'')')}">
+                <form th:action="@{/favorites/add/{id}(id=${movie.id})}" method="post">
+                    <button type="submit" class="btn btn-sm">⭐</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+</tbody>
+```
+
+---
+
+## 6. Estilos — añadir en `layout.html`
+
+```css
+/* ── POSTER ── */
+.col-poster { width: 54px; }
+
+.movie-poster {
+    height: 60px;
+    width: 40px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    display: block;
+}
+```
+
+---
+
+## 7. Imagen de fallback
+
+Crea la carpeta y añade una imagen genérica para cuando TMDB no encuentre el cartel:
+
+```
+src/main/resources/static/images/no-poster.png
+```
+
+Puede ser cualquier imagen neutra de ~40×60 px.
+
+---
+
+## Flujo completo
+
+```
+GET /movies
+  │
+  ├─→ MovieService      llama a tu API REST → PageResponse<MovieResponseDto>
+  │
+  ├─→ PosterService     para cada película:
+  │       ├─ ¿está en caché?  → devuelve URL directamente
+  │       └─ no está         → llama a TMDB /search/movie?query={title}
+  │                              └─ guarda en caché y devuelve URL
+  │
+  └─→ Model: page + size + sort + dir + posters
+        │
+        └─→ list.html: <img th:src="${posters[movie.id]}">
+```
+
+---
+
+## Notas
+
+- La caché (`ConcurrentHashMap`) es **en memoria**: se pierde al reiniciar la aplicación,
+  pero evita llamar a TMDB en cada cambio de página para películas ya vistas.
+- TMDB devuelve el primer resultado de búsqueda por título. Si hay títulos ambiguos
+  o en español, puede no coincidir; en ese caso se muestra el fallback.
+- El token de TMDB **no debe subirse a Git**. Usa variables de entorno o un
+  `application-local.properties` ignorado en `.gitignore`.
+
