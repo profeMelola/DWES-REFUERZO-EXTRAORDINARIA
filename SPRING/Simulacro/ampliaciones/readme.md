@@ -231,3 +231,5 @@ Modificaciones en ActorController:
 ## 3.1. Relación ManyToMany
 
 ¿Qué relación @ManyToMany podríamos implementar?
+
+[Propuesta ManyToMany](manyToMany.md)
