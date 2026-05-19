@@ -62,6 +62,7 @@ Comportamiento esperado:
 
 - Si la película no existe → 404 Not Found
 - Si el director no existe → 404 Not Found
+- Si el director no está activo → Gestión con excepción propia *BusinessRuleException* y devolvemos 422 Unprocessable Entity (regla de negocio que impide la operación)
 - Si el director ya está asignado a esa película → 409 Conflict
 - Si la operación es correcta → 201 Created
 
