@@ -16,5 +16,6 @@
 13. [CSRF](./CSRF.md)
 14. [Java Moderno](./java-moderno.md)
 15. [Http Location Header](./http-location-header.md)
-16. [Ver simulador interactivo borrado en cascada](./CASCADE_DELETE.md)
-16. [JPQL - report interactivo](https://profeMelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/jpql-report-explainer.html)
+16. [Ver simulador interactivo borrado en cascada - películas y actores](./CASCADE_DELETE.md)
+17. [JPQL - report interactivo](https://profeMelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/jpql-report-explainer.html)
+18. [Ver simulador interactivo borrado - películas y directores - orphanRemoval y cascade](https://tuusuario.github.io/tu-repo/simulador-orphan-removal.html)
