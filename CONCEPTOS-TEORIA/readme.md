@@ -18,5 +18,5 @@
 15. [Http Location Header](./http-location-header.md)
 16. [Ver simulador interactivo borrado en cascada - películas y actores](./CASCADE_DELETE.md)
 17. [JPQL - report interactivo](https://profeMelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/jpql-report-explainer.html)
-18. [Ver simulador interactivo borrado - películas y directores - orphanRemoval y cascade](./simulador-orphan-removal.html)
+18. [Ver simulador interactivo borrado - películas y directores - orphanRemoval y cascade](https://profeMelola.github.io/DWES-REFUERZO-EXTRAORDINARIA/simulador-orphan-removal.html)
     
