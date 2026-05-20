@@ -33,21 +33,42 @@ server.tomcat.threads.min-spare=10
 
 ---
 
-## Concepto 2 — `@Transactional` y los hilos
+## Concepto 2 — `@Transactional` — atomicidad y consistencia
 
-Cada hilo que atiende una petición tiene su **propia transacción** — su propia conexión a la base de datos y su propio contexto de persistencia de Hibernate.
+`@Transactional` garantiza que todas las operaciones de BD dentro de un método se ejecutan como una **unidad atómica**: o todas tienen éxito y se confirman (commit), o si algo falla se deshacen todas (rollback). Nunca queda la BD en un estado a medias.
 
+Es la propiedad **ACID** aplicada a nuestros servicios:
+
+| Propiedad | Significado |
+|---|---|
+| **A**tomicidad | Todo o nada — si falla algo, rollback automático |
+| **C**onsistencia | La BD pasa de un estado válido a otro estado válido |
+| **I**solation (aislamiento) | Nivel de visibilidad entre transacciones concurrentes — lo gestiona la BD |
+| **D**urabilidad | Una vez confirmado el commit, los cambios son permanentes |
+
+### Ejemplo en el proyecto
+
+```java
+@Transactional
+public void addActorToMovie(Long movieId, MovieCastRequestDto dto) {
+    Movie movie = movieRepository.findById(movieId)...  // operación 1
+    Actor actor = actorRepository.findById(...)...      // operación 2
+    MovieCast movieCast = new MovieCast()...
+    movie.addMovieCast(movieCast);                       // operación 3 — insert en movie_cast
+    // Si cualquiera de las tres falla → rollback de todas
+    // Si todas van bien → commit automático al salir del método
+}
 ```
-Hilo 1 (Usuario A añade actor a Inception)    → Transacción 1 → Conexión BD 1
-Hilo 2 (Usuario B borra actor de Dunkirk)     → Transacción 2 → Conexión BD 2
-Hilo 3 (Usuario C consulta el report)         → Transacción 3 → Conexión BD 3
-```
 
-Esto garantiza que las operaciones de un usuario no interfieren con las de otro. Es el principio de **aislamiento de transacciones** (la I de ACID).
+Sin `@Transactional`, cada operación sería una transacción independiente — si falla la tercera, las dos primeras ya estarían confirmadas en BD y la BD quedaría en estado inconsistente.
 
-### ¿Qué pasa si dos usuarios modifican el mismo dato a la vez?
+### `@Transactional(readOnly = true)`
 
-Ejemplo: Usuario A y Usuario B intentan añadir el mismo actor a la misma película al mismo tiempo.
+En los métodos de solo lectura le indica a Hibernate que no haga flush antes de ejecutar las queries — una optimización de rendimiento, no una garantía de concurrencia. Lo usamos en todos los métodos `get` del servicio.
+
+### La BD como árbitro final ante concurrencia
+
+`@Transactional` no resuelve por sí solo los problemas de concurrencia. Si dos usuarios intentan añadir el mismo actor a la misma película exactamente al mismo tiempo, ambas transacciones pueden pasar la comprobación de duplicados antes de que ninguna haya hecho el insert:
 
 ```
 Hilo 1: comprueba duplicado → no existe → va a insertar...
@@ -56,7 +77,7 @@ Hilo 1: inserta (movie_id=1, actor_id=5) ✅
 Hilo 2: inserta (movie_id=1, actor_id=5) ❌ → violación de PK → excepción de BD
 ```
 
-La base de datos actúa como árbitro final gracias a la restricción de **PK única**. La aplicación recibe una excepción que puede gestionar. Por eso las restricciones en BD (`PRIMARY KEY`, `UNIQUE`, `NOT NULL`) son imprescindibles — son la última línea de defensa.
+La base de datos actúa como árbitro final gracias a las restricciones de `PRIMARY KEY`, `UNIQUE` y `FOREIGN KEY`. Por eso esas restricciones en BD son imprescindibles — son la última línea de defensa.
 
 ### El pool de conexiones
 
@@ -189,7 +210,7 @@ Esos son conceptos avanzados para cuando se trabaje con microservicios o arquite
 | Buena práctica | Dónde la aplicamos |
 |---|---|
 | Servicios stateless | Todos los `@Service` solo tienen dependencias `final` inyectadas |
-| Transacciones por hilo | `@Transactional` en cada método de servicio que accede a BD |
+| Atomicidad en BD | `@Transactional` en cada método de servicio que modifica BD |
+| Optimización de lectura | `@Transactional(readOnly = true)` en métodos de solo lectura |
 | Pool de conexiones | HikariCP configurado automáticamente por Spring Boot |
 | Árbitro final en BD | PK, UNIQUE y FK en todas las tablas |
-| Lectura optimizada | `@Transactional(readOnly = true)` en métodos de solo lectura |
