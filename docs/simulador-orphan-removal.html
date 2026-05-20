@@ -6,199 +6,42 @@
   <title>Simulador — orphanRemoval y cascade — Movie & Director</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-      color: #24292f;
-      background: #f6f8fa;
-      padding: 32px 16px;
-    }
-
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #24292f; background: #f6f8fa; padding: 32px 16px; }
     .container { max-width: 1100px; margin: 0 auto; }
-
-    h1 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #24292f;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #57606a;
-      margin-bottom: 24px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-      align-items: center;
-    }
-
-    .controls-label {
-      font-size: 12px;
-      color: #57606a;
-      margin-right: 4px;
-    }
-
-    .scenario-btn {
-      cursor: pointer;
-      padding: 6px 14px;
-      border-radius: 6px;
-      border: 1px solid #d0d7de;
-      background: #ffffff;
-      color: #24292f;
-      font-size: 12px;
-      transition: background 0.15s;
-    }
-
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; color: #24292f; }
+    .subtitle { font-size: 13px; color: #57606a; margin-bottom: 24px; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center; }
+    .controls-label { font-size: 12px; color: #57606a; margin-right: 4px; }
+    .scenario-btn { cursor: pointer; padding: 6px 14px; border-radius: 6px; border: 1px solid #d0d7de; background: #ffffff; color: #24292f; font-size: 12px; transition: background 0.15s; }
     .scenario-btn:hover { background: #f6f8fa; }
-
-    .scenario-btn.active {
-      background: #ddf4ff;
-      color: #0969da;
-      border-color: #54aeff;
-    }
-
-    .desc-box {
-      background: #ffffff;
-      border: 1px solid #d0d7de;
-      border-radius: 6px;
-      padding: 12px 16px;
-      margin-bottom: 1.5rem;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
+    .scenario-btn.active { background: #ddf4ff; color: #0969da; border-color: #54aeff; }
+    .desc-box { background: #ffffff; border: 1px solid #d0d7de; border-radius: 6px; padding: 12px 16px; margin-bottom: 1.5rem; font-size: 13px; line-height: 1.7; }
     .desc-box strong { font-weight: 600; }
-
-    .desc-box code {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 12px;
-      background: #f6f8fa;
-      border: 1px solid #d0d7de;
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
-
-    .tables-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 1rem;
-    }
-
-    .tbl-wrap {
-      border: 1px solid #d0d7de;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #ffffff;
-    }
-
-    .tbl-title {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: #57606a;
-      padding: 8px 10px;
-      border-bottom: 1px solid #d0d7de;
-      background: #f6f8fa;
-    }
-
+    .desc-box code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; background: #f6f8fa; border: 1px solid #d0d7de; padding: 1px 5px; border-radius: 4px; }
+    .tables-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+    .tbl-wrap { border: 1px solid #d0d7de; border-radius: 6px; overflow: hidden; background: #ffffff; }
+    .tbl-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #57606a; padding: 8px 10px; border-bottom: 1px solid #d0d7de; background: #f6f8fa; }
+    .tbl-sublabel { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-bottom: 1px solid #d0d7de; }
+    .sublabel-mem { background: #fff8c5; color: #9a6700; }
+    .sublabel-bd  { background: #dafbe1; color: #1a7f37; border-top: 1px solid #d0d7de; }
     table { width: 100%; border-collapse: collapse; }
-
     td, th { padding: 6px 8px; font-size: 12px; text-align: left; }
-
-    th {
-      font-weight: 600;
-      font-size: 11px;
-      color: #57606a;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      border-bottom: 1px solid #d0d7de;
-      background: #f6f8fa;
-    }
-
+    th { font-weight: 600; font-size: 11px; color: #57606a; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #d0d7de; background: #f6f8fa; }
     tr + tr td { border-top: 1px solid #eaeef2; }
-
-    .ok { background: #dafbe1; }
-    .ok td { color: #1a7f37; }
-
-    .del { background: #ffebe9; text-decoration: line-through; }
-    .del td { color: #cf222e; }
-
-    .warn { background: #fff8c5; }
-    .warn td { color: #9a6700; }
-
-    .result-box {
-      border: 1px solid #d0d7de;
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 13px;
-      line-height: 1.6;
-      margin-top: 1rem;
-      background: #ffffff;
-    }
-
-    .result-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: #57606a;
-      margin-bottom: 4px;
-      font-weight: 600;
-    }
-
-    .legend {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-
-    .leg-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #57606a;
-    }
-
-    .leg-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-    }
-
+    .ok  { background: #dafbe1; } .ok  td { color: #1a7f37; }
+    .del { background: #ffebe9; text-decoration: line-through; } .del td { color: #cf222e; }
+    .warn { background: #fff8c5; } .warn td { color: #9a6700; }
+    .result-box { border: 1px solid #d0d7de; border-radius: 6px; padding: 10px 14px; font-size: 13px; line-height: 1.6; margin-top: 1rem; background: #ffffff; }
+    .result-label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #57606a; margin-bottom: 4px; font-weight: 600; }
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 1rem; }
+    .leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #57606a; }
+    .leg-dot { width: 12px; height: 12px; border-radius: 3px; }
     .leg-ok { background: #dafbe1; border: 1px solid #1a7f37; }
     .leg-del { background: #ffebe9; border: 1px solid #cf222e; }
     .leg-warn { background: #fff8c5; border: 1px solid #9a6700; }
-
-    .annotation {
-      font-size: 12px;
-      color: #57606a;
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid #d0d7de;
-    }
-
-    .annotation code {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 11px;
-      background: #f6f8fa;
-      border: 1px solid #d0d7de;
-      padding: 1px 4px;
-      border-radius: 4px;
-    }
-
-    @media (max-width: 700px) {
-      .tables-grid { grid-template-columns: 1fr; }
-    }
+    .annotation { font-size: 12px; color: #57606a; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #d0d7de; }
+    .annotation code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 11px; background: #f6f8fa; border: 1px solid #d0d7de; padding: 1px 4px; border-radius: 4px; }
+    @media (max-width: 700px) { .tables-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -220,24 +63,22 @@
   <div class="tables-grid">
     <div class="tbl-wrap">
       <div class="tbl-title">movies</div>
-      <table>
-        <thead><tr><th>id</th><th>title</th><th>active</th></tr></thead>
-        <tbody id="t-movies"></tbody>
-      </table>
+      <table><thead><tr><th>id</th><th>title</th><th>active</th></tr></thead>
+      <tbody id="t-movies"></tbody></table>
     </div>
     <div class="tbl-wrap">
       <div class="tbl-title">directors</div>
-      <table>
-        <thead><tr><th>id</th><th>full_name</th><th>active</th></tr></thead>
-        <tbody id="t-directors"></tbody>
-      </table>
+      <table><thead><tr><th>id</th><th>full_name</th><th>active</th></tr></thead>
+      <tbody id="t-directors"></tbody></table>
     </div>
-    <div class="tbl-wrap">
+    <div class="tbl-wrap" id="md-wrap">
       <div class="tbl-title">movie_director</div>
-      <table>
-        <thead><tr><th>movie_id</th><th>director_id</th><th>role</th></tr></thead>
-        <tbody id="t-md"></tbody>
-      </table>
+      <div id="sublabel-mem" class="tbl-sublabel sublabel-mem" style="display:none">En memoria (objeto Java)</div>
+      <table><thead><tr><th>movie_id</th><th>director_id</th><th>role</th></tr></thead>
+      <tbody id="t-md"></tbody></table>
+      <div id="sublabel-bd" class="tbl-sublabel sublabel-bd" style="display:none">En base de datos (real)</div>
+      <table id="t-bd-table" style="display:none"><thead><tr><th>movie_id</th><th>director_id</th><th>role</th></tr></thead>
+      <tbody id="t-md-bd"></tbody></table>
     </div>
   </div>
 
@@ -263,110 +104,126 @@
 </div>
 
 <script>
-  const scenarios = [
-    {
-      label: "removeMovieDirector() con orphanRemoval=true",
-      desc: `<strong>Acción:</strong> <code>movie.removeMovieDirector(md)</code> — se elimina a Nolan del reparto de Inception llamando al helper bidireccional.<br>
+const scenarios = [
+  {
+    desc: `<strong>Acción:</strong> <code>movie.removeMovieDirector(md)</code> — se elimina a Nolan del reparto de Inception llamando al helper bidireccional.<br>
 Con <code>orphanRemoval = true</code> en Movie, Hibernate detecta que ese MovieDirector ya no tiene película padre y lo borra de BD automáticamente al hacer flush. La película y el director siguen existiendo intactos.`,
-      movies: [
-        { id: 1, title: "Inception", active: "true", cls: "ok" },
-        { id: 2, title: "The Dark Knight", active: "true", cls: "ok" },
-        { id: 3, title: "Interstellar", active: "true", cls: "ok" },
-      ],
-      directors: [
-        { id: 1, name: "Christopher Nolan", active: "true", cls: "ok" },
-        { id: 2, name: "Denis Villeneuve", active: "true", cls: "ok" },
-      ],
-      md: [
-        { mid: 1, did: 1, role: "DIRECTOR", cls: "del" },
-        { mid: 2, did: 1, role: "DIRECTOR", cls: "ok" },
-        { mid: 3, did: 1, role: "DIRECTOR", cls: "ok" },
-      ],
-      result: "La fila (movie_id=1, director_id=1) se borra de movie_director por orphanRemoval. Inception y Nolan siguen existiendo. Los otros roles de Nolan en Dark Knight e Interstellar no se tocan."
-    },
-    {
-      label: "delete movie completa con cascade ALL",
-      desc: `<strong>Acción:</strong> <code>movieRepository.delete(movie)</code> — se borra Inception completa.<br>
+    movies: [
+      {id:1, title:"Inception", active:"true", cls:"ok"},
+      {id:2, title:"The Dark Knight", active:"true", cls:"ok"},
+      {id:3, title:"Interstellar", active:"true", cls:"ok"},
+    ],
+    directors: [
+      {id:1, name:"Christopher Nolan", active:"true", cls:"ok"},
+      {id:2, name:"Denis Villeneuve", active:"true", cls:"ok"},
+    ],
+    md: [
+      {mid:1, did:1, role:"DIRECTOR", cls:"del"},
+      {mid:2, did:1, role:"DIRECTOR", cls:"ok"},
+      {mid:3, did:1, role:"DIRECTOR", cls:"ok"},
+    ],
+    mdBd: null,
+    result: "La fila (movie_id=1, director_id=1) se borra de movie_director por orphanRemoval. Inception y Nolan siguen existiendo. Los otros roles de Nolan en Dark Knight e Interstellar no se tocan."
+  },
+  {
+    desc: `<strong>Acción:</strong> <code>movieRepository.delete(movie)</code> — se borra Inception completa.<br>
 Con <code>cascade = CascadeType.ALL + orphanRemoval = true</code> en <code>Movie.movieDirectors</code>, Hibernate borra en cascada todos los MovieDirector asociados a Inception antes de borrar la película. Los directores no se tocan.`,
-      movies: [
-        { id: 1, title: "Inception", active: "true", cls: "del" },
-        { id: 2, title: "The Dark Knight", active: "true", cls: "ok" },
-        { id: 3, title: "Interstellar", active: "true", cls: "ok" },
-      ],
-      directors: [
-        { id: 1, name: "Christopher Nolan", active: "true", cls: "ok" },
-        { id: 2, name: "Denis Villeneuve", active: "true", cls: "ok" },
-      ],
-      md: [
-        { mid: 1, did: 1, role: "DIRECTOR", cls: "del" },
-        { mid: 2, did: 1, role: "DIRECTOR", cls: "ok" },
-        { mid: 3, did: 1, role: "DIRECTOR", cls: "ok" },
-      ],
-      result: "Se borra Inception y por cascade ALL se borran automáticamente todos sus registros en movie_director. Nolan sigue existiendo. Sus otros roles en Dark Knight e Interstellar no se tocan."
-    },
-    {
-      label: "sin orphanRemoval — huérfano en BD",
-      desc: `<strong>Acción:</strong> <code>movie.getMovieDirectors().remove(md)</code> directamente — sin usar el helper, y <strong>sin</strong> <code>orphanRemoval</code>.<br>
-Hibernate elimina el MovieDirector del Set en memoria pero <strong>no borra la fila de BD</strong>. El registro queda huérfano — existe en BD pero ya no está en la colección de la película. Este es el bug clásico cuando no se configura correctamente.`,
-      movies: [
-        { id: 1, title: "Inception", active: "true", cls: "ok" },
-        { id: 2, title: "The Dark Knight", active: "true", cls: "ok" },
-        { id: 3, title: "Interstellar", active: "true", cls: "ok" },
-      ],
-      directors: [
-        { id: 1, name: "Christopher Nolan", active: "true", cls: "ok" },
-        { id: 2, name: "Denis Villeneuve", active: "true", cls: "ok" },
-      ],
-      md: [
-        { mid: 1, did: 1, role: "DIRECTOR", cls: "warn" },
-        { mid: 2, did: 1, role: "DIRECTOR", cls: "ok" },
-        { mid: 3, did: 1, role: "DIRECTOR", cls: "ok" },
-      ],
-      result: "⚠ La fila (1,1) sigue en BD aunque se eliminó del Set en memoria. Estado inconsistente: la BD dice que Nolan dirige Inception, pero la aplicación no lo ve. Esto es exactamente lo que evita orphanRemoval=true."
-    },
-    {
-      label: "delete director sin cascade en Director",
-      desc: `<strong>Acción:</strong> <code>directorRepository.delete(director)</code> — se intenta borrar a Nolan.<br>
+    movies: [
+      {id:1, title:"Inception", active:"true", cls:"del"},
+      {id:2, title:"The Dark Knight", active:"true", cls:"ok"},
+      {id:3, title:"Interstellar", active:"true", cls:"ok"},
+    ],
+    directors: [
+      {id:1, name:"Christopher Nolan", active:"true", cls:"ok"},
+      {id:2, name:"Denis Villeneuve", active:"true", cls:"ok"},
+    ],
+    md: [
+      {mid:1, did:1, role:"DIRECTOR", cls:"del"},
+      {mid:2, did:1, role:"DIRECTOR", cls:"ok"},
+      {mid:3, did:1, role:"DIRECTOR", cls:"ok"},
+    ],
+    mdBd: null,
+    result: "Se borra Inception y por cascade ALL se borran automáticamente todos sus registros en movie_director. Nolan sigue existiendo. Sus otros roles en Dark Knight e Interstellar no se tocan."
+  },
+  {
+    desc: `<strong>Acción:</strong> <code>movie.removeMovieDirector(md)</code> — se llama al helper bidireccional <strong>sin</strong> <code>orphanRemoval</code>.<br>
+El helper hace su trabajo en memoria: quita el <code>MovieDirector</code> del Set y pone <code>movieDirector.setMovie(null)</code>. Pero sin <code>orphanRemoval</code>, Hibernate no borra la fila de BD.<br><br>
+<strong>Estado inconsistente:</strong> en memoria <code>movieDirector.getMovie()</code> devuelve <code>null</code>, pero en BD la fila sigue con <code>movie_id = 1</code> porque es parte de la PK compuesta y es <code>NOT NULL</code> — Hibernate no puede ponerla a null aunque el objeto en memoria lo tenga.`,
+    movies: [
+      {id:1, title:"Inception", active:"true", cls:"ok"},
+      {id:2, title:"The Dark Knight", active:"true", cls:"ok"},
+      {id:3, title:"Interstellar", active:"true", cls:"ok"},
+    ],
+    directors: [
+      {id:1, name:"Christopher Nolan", active:"true", cls:"ok"},
+      {id:2, name:"Denis Villeneuve", active:"true", cls:"ok"},
+    ],
+    md: [
+      {mid:"null ⚠", did:1, role:"DIRECTOR", cls:"warn"},
+      {mid:2, did:1, role:"DIRECTOR", cls:"ok"},
+      {mid:3, did:1, role:"DIRECTOR", cls:"ok"},
+    ],
+    mdBd: [
+      {mid:1, did:1, role:"DIRECTOR", cls:"warn"},
+      {mid:2, did:1, role:"DIRECTOR", cls:"ok"},
+      {mid:3, did:1, role:"DIRECTOR", cls:"ok"},
+    ],
+    result: "⚠ Estado inconsistente — En memoria: movieDirector.getMovie() = null (movie_id = null). En BD: la fila sigue con movie_id = 1 porque es PK NOT NULL y Hibernate no la modifica. La BD dice que Nolan dirige Inception, la aplicación no lo ve. orphanRemoval=true evita exactamente esto."
+  },
+  {
+    desc: `<strong>Acción:</strong> <code>directorRepository.delete(director)</code> — se intenta borrar a Nolan.<br>
 <code>Director</code> no tiene cascade en su colección <code>movieDirectors</code>. La FK en <code>movie_director.director_id</code> bloquea el borrado porque hay filas que referencian a Nolan. La BD lanza un error de violación de FK. Por eso en el servicio debemos comprobar si el director tiene películas antes de intentar el delete.`,
-      movies: [
-        { id: 1, title: "Inception", active: "true", cls: "ok" },
-        { id: 2, title: "The Dark Knight", active: "true", cls: "ok" },
-        { id: 3, title: "Interstellar", active: "true", cls: "ok" },
-      ],
-      directors: [
-        { id: 1, name: "Christopher Nolan", active: "true", cls: "warn" },
-        { id: 2, name: "Denis Villeneuve", active: "true", cls: "ok" },
-      ],
-      md: [
-        { mid: 1, did: 1, role: "DIRECTOR", cls: "warn" },
-        { mid: 2, did: 1, role: "DIRECTOR", cls: "warn" },
-        { mid: 3, did: 1, role: "DIRECTOR", cls: "warn" },
-      ],
-      result: "⚠ FK bloqueada — Nolan no se puede borrar porque tiene 3 filas en movie_director que lo referencian. La BD lanza violación de FK. Nada se borra. En el servicio lanzamos una excepción propia antes de intentar el delete."
-    }
-  ];
+    movies: [
+      {id:1, title:"Inception", active:"true", cls:"ok"},
+      {id:2, title:"The Dark Knight", active:"true", cls:"ok"},
+      {id:3, title:"Interstellar", active:"true", cls:"ok"},
+    ],
+    directors: [
+      {id:1, name:"Christopher Nolan", active:"true", cls:"warn"},
+      {id:2, name:"Denis Villeneuve", active:"true", cls:"ok"},
+    ],
+    md: [
+      {mid:1, did:1, role:"DIRECTOR", cls:"warn"},
+      {mid:2, did:1, role:"DIRECTOR", cls:"warn"},
+      {mid:3, did:1, role:"DIRECTOR", cls:"warn"},
+    ],
+    mdBd: null,
+    result: "⚠ FK bloqueada — Nolan no se puede borrar porque tiene 3 filas en movie_director que lo referencian. La BD lanza violación de FK. Nada se borra. En el servicio lanzamos una excepción propia antes de intentar el delete."
+  }
+];
 
-  function setScenario(i) {
-    document.querySelectorAll('.scenario-btn').forEach((b, j) => b.classList.toggle('active', i === j));
-    const s = scenarios[i];
-    document.getElementById('desc').innerHTML = s.desc;
+function setScenario(i) {
+  document.querySelectorAll('.scenario-btn').forEach((b,j) => b.classList.toggle('active', i===j));
+  const s = scenarios[i];
+  document.getElementById('desc').innerHTML = s.desc;
 
-    document.getElementById('t-movies').innerHTML = s.movies.map(r =>
-      `<tr class="${r.cls}"><td>${r.id}</td><td>${r.title}</td><td>${r.active}</td></tr>`
-    ).join('');
+  document.getElementById('t-movies').innerHTML = s.movies.map(r =>
+    `<tr class="${r.cls}"><td>${r.id}</td><td>${r.title}</td><td>${r.active}</td></tr>`
+  ).join('');
 
-    document.getElementById('t-directors').innerHTML = s.directors.map(r =>
-      `<tr class="${r.cls}"><td>${r.id}</td><td>${r.name}</td><td>${r.active}</td></tr>`
-    ).join('');
+  document.getElementById('t-directors').innerHTML = s.directors.map(r =>
+    `<tr class="${r.cls}"><td>${r.id}</td><td>${r.name}</td><td>${r.active}</td></tr>`
+  ).join('');
 
-    document.getElementById('t-md').innerHTML = s.md.map(r =>
+  document.getElementById('t-md').innerHTML = s.md.map(r =>
+    `<tr class="${r.cls}"><td>${r.mid}</td><td>${r.did}</td><td>${r.role}</td></tr>`
+  ).join('');
+
+  const showDual = s.mdBd !== null;
+  document.getElementById('sublabel-mem').style.display = showDual ? 'block' : 'none';
+  document.getElementById('sublabel-bd').style.display  = showDual ? 'block' : 'none';
+  document.getElementById('t-bd-table').style.display   = showDual ? 'table' : 'none';
+
+  if (showDual) {
+    document.getElementById('t-md-bd').innerHTML = s.mdBd.map(r =>
       `<tr class="${r.cls}"><td>${r.mid}</td><td>${r.did}</td><td>${r.role}</td></tr>`
     ).join('');
-
-    document.getElementById('result-text').textContent = s.result;
   }
 
-  setScenario(0);
+  document.getElementById('result-text').textContent = s.result;
+}
+
+setScenario(0);
 </script>
 </body>
 </html>
