@@ -29,7 +29,6 @@ server.tomcat.threads.max=200
 server.tomcat.threads.min-spare=10
 ```
 
-> **En clase ya tenemos esto funcionando** — cuando probamos la API con Postman y dos ventanas abiertas a la vez, cada petición va en su propio hilo sin que nosotros hayamos escrito nada especial.
 
 ---
 
@@ -131,18 +130,19 @@ Dos hilos pueden leer el valor al mismo tiempo, incrementarlo cada uno por su cu
 @Service
 @RequiredArgsConstructor
 public class MovieService {
-    
-    // ✅ Solo dependencias inyectadas — inmutables una vez inyectadas
+
     private final MovieRepository movieRepository;
-    private final MovieMapper movieMapper;
-    
-    // No hay ningún campo de instancia con estado mutable
-    
+
+    // AtomicInteger garantiza operaciones atómicas sin synchronized
+    private final AtomicInteger totalConsultas = new AtomicInteger(0);
+
     public List<MovieResponseDto> getAllMovies() {
-        return movieRepository.findAll()
-                .stream()
-                .map(movieMapper::toResponseDto)
-                .toList();
+        totalConsultas.incrementAndGet(); // atómico — no hay race condition
+        return movieRepository.findAll()...
+    }
+
+    public int getTotalConsultas() {
+        return totalConsultas.get();
     }
 }
 ```
